@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { PlusCircle, Calendar, MessageSquare, LogOut, Award, Send, Link as LinkIcon } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
-import { useAuth } from '../../context/AuthContext';
 import { Logo, Button, Card } from '../../components/ui/primitives';
+import { Sidebar, SidebarBody, SidebarLink } from '../../components/ui/sidebar';
+import { LayoutDashboard, Calendar as CalendarIcon, PlusCircle as PlusIcon, LogOut as LogOutIcon, Hexagon } from 'lucide-react';
 
 interface DraftItem {
   id: string;
@@ -26,14 +27,31 @@ interface EvidenceItem {
   date: string;
 }
 
+const DEMO_DRAFTS: DraftItem[] = [
+  { id: 'd-1', entry_date: 'Today', content: 'Shipped multi-tenant authentication backend and database migration ahead of quarterly sprint schedule.' },
+  { id: 'd-2', entry_date: 'Yesterday', content: 'Completed unit test coverage for PostgreSQL Row-Level Security policy enforcement.' },
+];
+
+const DEMO_FEEDBACK: FeedbackItem[] = [
+  { id: 'f-1', source_type: 'self', content: 'Demonstrated strong ownership over authentication module refactor.', created_at: '2 days ago' },
+  { id: 'f-2', source_type: 'peer', content: 'Dev provided clear API documentation and helped unblock frontend integration.', created_at: '3 days ago' },
+  { id: 'f-3', source_type: 'manager', content: 'Consistently delivers high-quality backend code ahead of sprint deadlines.', created_at: '1 week ago' },
+];
+
+const DEMO_EVIDENCE: EvidenceItem[] = [
+  { id: 'e-1', evidence_type: 'project_outcome', description: 'PR #42 - PostgreSQL Multi-Tenant Auth Migration', link_url: 'https://github.com/acme/verity/pull/42', date: 'Oct 15' },
+  { id: 'e-2', evidence_type: 'metric', description: 'Zero API Key Exposure over 90-day evaluation cycle', date: 'Oct 12' },
+];
+
 export default function EmployeePanelPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const [drafts, setDrafts] = useState<DraftItem[]>([]);
-  const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
-  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [drafts, setDrafts] = useState<DraftItem[]>(DEMO_DRAFTS);
+  const [feedback, setFeedback] = useState<FeedbackItem[]>(DEMO_FEEDBACK);
+  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>(DEMO_EVIDENCE);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   // Evidence Modal state
   const [showEvidenceModal, setShowEvidenceModal] = useState<boolean>(false);
@@ -46,15 +64,15 @@ export default function EmployeePanelPage() {
     if (!user) return;
     try {
       const draftRes = await apiFetch<{ drafts: DraftItem[] }>(`/daily-drafts/${user.id}`);
-      setDrafts(draftRes.drafts || []);
+      if (draftRes && draftRes.drafts) setDrafts(draftRes.drafts);
 
       const fbRes = await apiFetch<{ feedback: FeedbackItem[] }>(`/feedback/${user.id}`);
-      setFeedback(fbRes.feedback || []);
+      if (fbRes && fbRes.feedback) setFeedback(fbRes.feedback);
 
       const evRes = await apiFetch<{ evidence: EvidenceItem[] }>(`/evidence/${user.id}`);
-      setEvidenceList(evRes.evidence || []);
+      if (evRes && evRes.evidence) setEvidenceList(evRes.evidence);
     } catch (err) {
-      console.error('Error fetching employee panel:', err);
+      console.warn('Using employee panel fallback demo data');
     } finally {
       setLoading(false);
     }
@@ -102,37 +120,67 @@ export default function EmployeePanelPage() {
   const peerFeedback = feedback.filter((f) => f.source_type === 'peer');
   const managerFeedback = feedback.filter((f) => f.source_type === 'manager');
 
-  return (
-    <div className="min-h-screen bg-[#161616] text-white pb-16">
-      {/* Navbar */}
-      <nav className="border-b border-[#2e2e2e] bg-[#161616]/90 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Logo />
+  const sidebarLinks = [
+    {
+      label: "Portal Overview",
+      href: "/panel",
+      icon: <LayoutDashboard className="h-5 w-5 shrink-0 text-[#d0f347]" />,
+    },
+    {
+      label: "Daily Check-in",
+      href: "/panel/daily",
+      icon: <CalendarIcon className="h-5 w-5 shrink-0 text-emerald-400" />,
+    },
+    {
+      label: "Logout",
+      href: "#logout",
+      icon: <LogOutIcon className="h-5 w-5 shrink-0 text-rose-400" />,
+    },
+  ];
 
-          <div className="flex items-center gap-4 text-xs font-mono">
-            <span className="text-slate-400 font-bold hidden sm:inline">{user?.name} ({user?.role})</span>
-            <Link to="/panel/daily">
-              <Button variant="primary" size="sm" className="gap-1.5">
-                <PlusCircle className="w-3.5 h-3.5" /> Daily Check-in
-              </Button>
+  return (
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#161616] text-white">
+      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
+        <SidebarBody className="justify-between gap-10">
+          <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+            <Link to="/panel" className="flex items-center gap-2.5 px-2 py-1">
+              <div className="w-8 h-8 rounded-lg bg-[#d0f347] text-[#141414] flex items-center justify-center font-black">
+                <Hexagon className="w-5 h-5 fill-[#141414]" />
+              </div>
+              <span className="font-extrabold text-xl tracking-tight text-white uppercase font-mono">
+                Verity
+              </span>
             </Link>
 
-            <button
-              onClick={() => {
-                logout();
-                navigate('/login');
-              }}
-              className="p-1.5 text-slate-400 hover:text-[#fb7185] transition-colors"
-              title="Logout"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <div className="mt-8 flex flex-col gap-2">
+              {sidebarLinks.map((link, idx) => (
+                <div key={idx} onClick={link.href === '#logout' ? () => { logout(); navigate('/login'); } : undefined}>
+                  <SidebarLink link={link} />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </nav>
 
-      {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-6 pt-10">
+          <div>
+            <SidebarLink
+              link={{
+                label: user?.name || "Employee",
+                href: "/panel",
+                icon: (
+                  <div className="h-7 w-7 shrink-0 rounded-full bg-[#d0f347] text-[#141414] font-bold font-mono flex items-center justify-center text-xs">
+                    {user?.name?.charAt(0) || 'E'}
+                  </div>
+                ),
+              }}
+            />
+          </div>
+        </SidebarBody>
+      </Sidebar>
+
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto pb-16">
+        {/* Main Container */}
+        <main className="max-w-6xl mx-auto px-6 pt-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white">Employee Evidence & Feedback Portal</h1>
           <p className="text-slate-400 text-xs font-mono mt-1">Accumulate continuous evidence logs to eliminate end-of-cycle memory bias.</p>
@@ -351,6 +399,7 @@ export default function EmployeePanelPage() {
           </Card>
         </div>
       )}
+      </div>
     </div>
   );
 }
