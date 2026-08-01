@@ -270,7 +270,6 @@ export default function LandingPage() {
 
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
             <a href="#partners" className="hover:text-white transition-colors">Ecosystem</a>
-            <a href="#integration-hub" className="hover:text-white transition-colors">Connected Hub</a>
             <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
             <a href="#evidence-engine" className="hover:text-white transition-colors">Evidence Engine</a>
             <a href="#bias-audit" className="hover:text-white transition-colors">Bias Auditing</a>
@@ -318,10 +317,10 @@ export default function LandingPage() {
                 Get Demo <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="#integration-hub"
+                href="#how-it-works"
                 className="px-6 py-3 bg-transparent text-white border border-[#2e2e2e] hover:bg-[#222222] font-extrabold rounded-lg text-sm transition-all"
               >
-                Inspect Integration Flow
+                Inspect Workflow
               </a>
             </div>
           </div>
@@ -517,23 +516,6 @@ export default function LandingPage() {
           fadeOutColor="#181818"
           ariaLabel="Enterprise ecosystem integrations"
         />
-      </section>
-
-      {/* 3. ANIMATED NODE CONNECTOR INTEGRATION FLOW SECTION */}
-      <section id="integration-hub" className="py-24 max-w-7xl mx-auto px-6 relative">
-        <div className="mb-12 text-center max-w-2xl mx-auto scroll-popup">
-          <span className="qount-eyebrow">Connected System Architecture</span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
-            Connected Intelligence Pipeline
-          </h2>
-          <p className="text-slate-400 text-xs sm:text-sm mt-2">
-            Select any source node to watch live evidence flow into the AI Analysis Hub.
-          </p>
-        </div>
-
-        <div className="scroll-popup">
-          <SwapColumnFeatures />
-        </div>
       </section>
 
       {/* 4. HOW IT WORKS SECTION */}
