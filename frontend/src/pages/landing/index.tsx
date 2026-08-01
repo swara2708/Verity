@@ -15,27 +15,21 @@ import {
   Shield,
   FileCheck,
   TrendingUp,
-  Key,
-  Lock,
   Hexagon,
   Sparkles,
   ExternalLink,
-  Target,
   Wrench,
   Layers,
   Database,
-  Bell,
-  Activity,
   Zap,
   GitBranch,
   Cpu,
   Globe,
-  Terminal,
-  Box,
   Cloud,
   Server
 } from 'lucide-react';
 import LogoLoop, { LogoItem } from '../../components/ui/LogoLoop';
+import CardSwap, { Card } from '../../components/ui/CardSwap';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -297,8 +291,8 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* 1. Hero Section */}
-      <section className="pt-32 pb-16 md:pt-40 md:pb-20 max-w-7xl mx-auto px-6">
+      {/* 1. Hero Section with React Bits <CardSwap /> 3D Animated Card Stack */}
+      <section className="pt-32 pb-16 md:pt-40 md:pb-24 max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Text */}
           <div className="lg:col-span-6 space-y-6 scroll-popup">
@@ -330,75 +324,173 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right Hero Mockup Frame */}
-          <div className="lg:col-span-6 scroll-popup">
-            <div className="bg-[#1c1c1c] border border-[#2e2e2e] rounded-2xl p-4 shadow-2xl overflow-hidden grid grid-cols-12 gap-4 card-hover-lift">
-              <div className="col-span-4 bg-[#181818] p-4 rounded-xl space-y-5 text-xs">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-6 h-6 rounded bg-[#d0f347] flex items-center justify-center font-bold text-[#141414]">
-                    <Hexagon className="w-4 h-4 fill-[#141414]" />
-                  </div>
-                  <span className="font-bold text-white text-sm">VERITY</span>
-                </div>
-
-                <div className="space-y-3 font-medium text-slate-300">
-                  <div className="flex items-center gap-2.5 text-[#d0f347] font-extrabold bg-[#242424] p-2 rounded-lg">
-                    <Home className="w-4 h-4" /> Home
-                  </div>
-                  <div className="flex items-center gap-2.5 hover:text-white px-2 py-1">
-                    <Briefcase className="w-4 h-4" /> Work
-                  </div>
-                  <div className="flex items-center gap-2.5 hover:text-white px-2 py-1">
-                    <MessageSquare className="w-4 h-4" /> Feedback
-                  </div>
-                  <div className="flex items-center gap-2.5 hover:text-white px-2 py-1">
-                    <Users className="w-4 h-4" /> Roster
-                  </div>
-                  <div className="flex items-center gap-2.5 hover:text-white px-2 py-1">
-                    <Clock className="w-4 h-4" /> Draft Logs
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-span-8 bg-white rounded-xl p-4 text-[#141414] shadow-md">
-                <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
-                  <span className="font-bold text-sm text-[#141414]">Review Intelligence Hub</span>
-                  <div className="flex items-center gap-3 text-xs font-semibold text-slate-500">
-                    <span>Cards</span>
-                    <span className="text-[#141414] border-b-2 border-[#141414] pb-0.5 font-bold">List</span>
-                  </div>
-                </div>
-
-                <div className="space-y-2.5 text-xs">
-                  <div className="grid grid-cols-12 items-center py-1.5 border-b border-slate-100 text-[11px]">
-                    <div className="col-span-3 flex items-center gap-1.5">
-                      <div className="w-5 h-5 rounded bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">✓</div>
-                      <span className="font-bold text-slate-800">[PR #42] Prep</span>
+          {/* Right Hero Stack: React Bits <CardSwap /> GSAP Animated Stack */}
+          <div className="lg:col-span-6 h-[440px] relative scroll-popup flex items-center justify-center">
+            <CardSwap
+              width={540}
+              height={360}
+              cardDistance={35}
+              verticalDistance={30}
+              delay={4200}
+              pauseOnHover={true}
+              skewAmount={2}
+              easing="elastic"
+            >
+              {/* Stack Card 1: Review Intelligence Hub List */}
+              <Card className="bg-[#1c1c1c] border border-[#2e2e2e] p-4 shadow-2xl overflow-hidden grid grid-cols-12 gap-3">
+                <div className="col-span-4 bg-[#181818] p-3 rounded-xl space-y-4 text-xs">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded bg-[#d0f347] flex items-center justify-center font-bold text-[#141414]">
+                      <Hexagon className="w-4 h-4 fill-[#141414]" />
                     </div>
-                    <div className="col-span-6 text-slate-600 font-medium truncate">Shipped auth token backend</div>
-                    <div className="col-span-3 text-right font-bold text-slate-800">Dev Patel</div>
+                    <span className="font-bold text-white text-xs uppercase tracking-wider">VERITY</span>
                   </div>
 
-                  <div className="grid grid-cols-12 items-center py-1.5 border-b border-slate-100 text-[11px]">
-                    <div className="col-span-3 flex items-center gap-1.5">
-                      <div className="w-5 h-5 rounded bg-[#d0f347]/30 text-[#141414] flex items-center justify-center font-bold">★</div>
-                      <span className="font-bold text-slate-800">[Peer] Feedback</span>
+                  <div className="space-y-2 font-medium text-slate-300 text-[11px]">
+                    <div className="flex items-center gap-2 text-[#d0f347] font-extrabold bg-[#242424] p-1.5 rounded-lg">
+                      <Home className="w-3.5 h-3.5" /> Home
                     </div>
-                    <div className="col-span-6 text-slate-600 font-medium truncate">High ownership of API migrations</div>
-                    <div className="col-span-3 text-right font-bold text-slate-800">Johanna Williams</div>
-                  </div>
-
-                  <div className="grid grid-cols-12 items-center py-1.5 text-[11px]">
-                    <div className="col-span-3 flex items-center gap-1.5">
-                      <div className="w-5 h-5 rounded bg-amber-100 text-amber-700 flex items-center justify-center font-bold">!</div>
-                      <span className="font-bold text-slate-800">[Bias] Recency</span>
+                    <div className="flex items-center gap-2 hover:text-white px-1.5 py-1">
+                      <Briefcase className="w-3.5 h-3.5" /> Work
                     </div>
-                    <div className="col-span-6 text-slate-600 font-medium truncate">85% feedback in last 2 weeks</div>
-                    <div className="col-span-3 text-right font-bold text-slate-800">Mia Chen</div>
+                    <div className="flex items-center gap-2 hover:text-white px-1.5 py-1">
+                      <MessageSquare className="w-3.5 h-3.5" /> Feedback
+                    </div>
+                    <div className="flex items-center gap-2 hover:text-white px-1.5 py-1">
+                      <Clock className="w-3.5 h-3.5" /> Draft Logs
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+
+                <div className="col-span-8 bg-white rounded-xl p-3 text-[#141414] shadow-md space-y-2">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <span className="font-bold text-xs text-[#141414]">Review Intelligence Hub</span>
+                    <span className="text-[10px] text-[#141414] font-bold border-b-2 border-[#141414] pb-0.5">List</span>
+                  </div>
+
+                  <div className="space-y-2 text-[11px]">
+                    <div className="grid grid-cols-12 items-center py-1 border-b border-slate-100">
+                      <div className="col-span-4 flex items-center gap-1">
+                        <span className="w-4 h-4 rounded bg-emerald-100 text-emerald-700 font-bold text-[10px] flex items-center justify-center">✓</span>
+                        <span className="font-bold text-slate-800">[PR #42]</span>
+                      </div>
+                      <div className="col-span-5 text-slate-600 font-medium truncate">Shipped auth backend</div>
+                      <div className="col-span-3 text-right font-bold text-slate-800">Dev Patel</div>
+                    </div>
+
+                    <div className="grid grid-cols-12 items-center py-1 border-b border-slate-100">
+                      <div className="col-span-4 flex items-center gap-1">
+                        <span className="w-4 h-4 rounded bg-[#d0f347]/30 text-[#141414] font-bold text-[10px] flex items-center justify-center">★</span>
+                        <span className="font-bold text-slate-800">[Peer]</span>
+                      </div>
+                      <div className="col-span-5 text-slate-600 font-medium truncate">API migration ownership</div>
+                      <div className="col-span-3 text-right font-bold text-slate-800">Johanna W.</div>
+                    </div>
+
+                    <div className="grid grid-cols-12 items-center py-1">
+                      <div className="col-span-4 flex items-center gap-1">
+                        <span className="w-4 h-4 rounded bg-amber-100 text-amber-700 font-bold text-[10px] flex items-center justify-center">!</span>
+                        <span className="font-bold text-slate-800">[Bias]</span>
+                      </div>
+                      <div className="col-span-5 text-slate-600 font-medium truncate">85% feedback in 2 wks</div>
+                      <div className="col-span-3 text-right font-bold text-slate-800">Mia Chen</div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Stack Card 2: Semantic Claim Verification Audit */}
+              <Card className="bg-[#1c1c1c] border border-[#2e2e2e] p-4 shadow-2xl overflow-hidden grid grid-cols-12 gap-3">
+                <div className="col-span-4 bg-[#181818] p-3 rounded-xl space-y-4 text-xs">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded bg-[#d0f347] flex items-center justify-center font-bold text-[#141414]">
+                      <Hexagon className="w-4 h-4 fill-[#141414]" />
+                    </div>
+                    <span className="font-bold text-white text-xs uppercase tracking-wider">VERITY</span>
+                  </div>
+
+                  <div className="space-y-2 font-medium text-slate-300 text-[11px]">
+                    <div className="flex items-center gap-2 text-[#d0f347] font-extrabold bg-[#242424] p-1.5 rounded-lg">
+                      <MessageSquare className="w-3.5 h-3.5" /> Feedback
+                    </div>
+                    <div className="flex items-center gap-2 hover:text-white px-1.5 py-1">
+                      <BarChart3 className="w-3.5 h-3.5" /> Bias Audit
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-span-8 bg-white rounded-xl p-3 text-[#141414] shadow-md space-y-2">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <span className="font-bold text-xs text-[#141414]">Claim Support Audit</span>
+                    <span className="font-mono text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Live AI Agent</span>
+                  </div>
+
+                  <div className="space-y-2 text-[11px]">
+                    <div className="p-2 bg-emerald-50 border border-emerald-200 rounded-lg">
+                      <div className="font-bold text-slate-900">Shipped invite token auth backend</div>
+                      <span className="font-mono text-[10px] font-bold text-emerald-800 block mt-0.5">✓ Backed by PR #42 & JIRA-104</span>
+                    </div>
+
+                    <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                      <div className="font-bold text-slate-900">Missed team architecture syncs</div>
+                      <span className="font-mono text-[10px] font-bold text-amber-800 block mt-0.5">! Unsupported claim (no source)</span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Stack Card 3: Deterministic Bias Engine Metrics */}
+              <Card className="bg-[#1c1c1c] border border-[#2e2e2e] p-4 shadow-2xl overflow-hidden grid grid-cols-12 gap-3">
+                <div className="col-span-4 bg-[#181818] p-3 rounded-xl space-y-4 text-xs">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded bg-[#d0f347] flex items-center justify-center font-bold text-[#141414]">
+                      <Hexagon className="w-4 h-4 fill-[#141414]" />
+                    </div>
+                    <span className="font-bold text-white text-xs uppercase tracking-wider">VERITY</span>
+                  </div>
+
+                  <div className="space-y-2 font-medium text-slate-300 text-[11px]">
+                    <div className="flex items-center gap-2 text-[#d0f347] font-extrabold bg-[#242424] p-1.5 rounded-lg">
+                      <BarChart3 className="w-3.5 h-3.5" /> Bias Audit
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-span-8 bg-white rounded-xl p-3 text-[#141414] shadow-md space-y-2.5">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                    <span className="font-bold text-xs text-[#141414]">Bias Metrics Engine</span>
+                    <span className="font-mono text-[10px] bg-[#d0f347]/30 text-[#141414] font-bold px-2 py-0.5 rounded-full">Pure Math</span>
+                  </div>
+
+                  <div className="space-y-2 text-[11px]">
+                    <div>
+                      <div className="flex justify-between font-bold text-[#141414] text-[10px] mb-0.5">
+                        <span>Recency Index</span>
+                        <span className="text-emerald-700 font-mono">0.25 (Pass)</span>
+                      </div>
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-emerald-500 h-full w-[25%]" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between font-bold text-[#141414] text-[10px] mb-0.5">
+                        <span>Source Diversity</span>
+                        <span className="text-emerald-700 font-mono">85% (4 Sources)</span>
+                      </div>
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-emerald-500 h-full w-[85%]" />
+                      </div>
+                    </div>
+
+                    <div className="p-1.5 bg-slate-100 rounded text-[10px] font-mono text-slate-700 font-bold flex items-center justify-between">
+                      <span>Audit Warning Flags:</span>
+                      <span className="text-emerald-700">0 Flags</span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </CardSwap>
           </div>
         </div>
       </section>
