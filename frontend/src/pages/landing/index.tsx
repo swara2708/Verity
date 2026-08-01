@@ -32,6 +32,7 @@ import LogoLoop, { LogoItem } from '../../components/ui/LogoLoop';
 import CardSwap, { Card } from '../../components/ui/CardSwap';
 import BorderGlow from '../../components/ui/BorderGlow';
 import SwapColumnFeatures from '../../components/ui/SwapColumnFeatures';
+import BlurText from '../../components/ui/BlurText';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -301,9 +302,14 @@ export default function LandingPage() {
               Practice Management
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
-              Bias-Aware Performance Intelligence Built for How Your Firm Actually Works
-            </h1>
+            <BlurText
+              text="Bias-Aware Performance Intelligence Built for How Your Firm Actually Works"
+              delay={120}
+              animateBy="words"
+              direction="top"
+              stepDuration={0.35}
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]"
+            />
 
             <p className="text-slate-400 text-sm sm:text-base leading-relaxed max-w-xl">
               Verity is a flexible, fully customizable all-in-one 360° review intelligence platform built for modern organizations that unifies daily evidence workflows, time-distributed progress check-ins, peer feedback, reporting, and deterministic bias auditing into one connected system.
