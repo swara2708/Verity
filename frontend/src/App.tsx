@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
 import LandingPage from './pages/landing';
@@ -16,7 +16,7 @@ import PanelDailyPage from './pages/panel-daily';
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login/hr" element={<HRLoginPage />} />
@@ -30,7 +30,7 @@ export default function App() {
           <Route path="/panel/daily" element={<PanelDailyPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </AuthProvider>
   );
 }
