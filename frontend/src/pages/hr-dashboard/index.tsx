@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus, Users, Clock, AlertTriangle, FileText, ExternalLink, LogOut, Copy, Check, Filter } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
-import { useAuth } from '../../context/AuthContext';
 import { Logo, Button, Card, StatusBadge } from '../../components/ui/primitives';
+import { Sidebar, SidebarBody, SidebarLink } from '../../components/ui/sidebar';
+import { LayoutDashboard, Clock as ClockIcon, UserPlus as UserPlusIcon, LogOut as LogOutIcon, Hexagon } from 'lucide-react';
 
 interface EmployeeItem {
   id: string;
@@ -26,6 +27,7 @@ export default function HRDashboardPage() {
   const [pendingCount, setPendingCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   // Invite Modal state
   const [showInviteModal, setShowInviteModal] = useState<boolean>(false);
@@ -100,46 +102,67 @@ export default function HRDashboardPage() {
     ? employees
     : employees.filter((e) => e.department.toLowerCase() === departmentFilter.toLowerCase());
 
-  return (
-    <div className="min-h-screen bg-[#161616] text-white pb-16">
-      {/* Top Nav */}
-      <nav className="border-b border-[#2e2e2e] bg-[#161616]/90 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Logo />
+  const sidebarLinks = [
+    {
+      label: "360° Roster",
+      href: "/hr/dashboard",
+      icon: <LayoutDashboard className="h-5 w-5 shrink-0 text-[#d0f347]" />,
+    },
+    {
+      label: `Requests ${pendingCount > 0 ? `(${pendingCount})` : ''}`,
+      href: "/hr/requests",
+      icon: <ClockIcon className="h-5 w-5 shrink-0 text-amber-400" />,
+    },
+    {
+      label: "Logout",
+      href: "#logout",
+      icon: <LogOutIcon className="h-5 w-5 shrink-0 text-rose-400" />,
+    },
+  ];
 
-          <div className="flex items-center gap-4 text-xs font-mono">
-            <Link to="/hr/requests" className="relative px-3.5 py-2 rounded-xl bg-[#222222] hover:bg-[#2e2e2e] border border-[#2e2e2e] text-white flex items-center gap-2 transition-all">
-              <Clock className="w-3.5 h-3.5 text-[#fbbf24]" />
-              <span>Pending Requests</span>
-              {pendingCount > 0 && (
-                <span className="px-2 py-0.5 text-[10px] bg-[#fbbf24] text-[#141414] font-bold rounded-full">
-                  {pendingCount}
-                </span>
-              )}
+  return (
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#161616] text-white">
+      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
+        <SidebarBody className="justify-between gap-10">
+          <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+            <Link to="/hr/dashboard" className="flex items-center gap-2.5 px-2 py-1">
+              <div className="w-8 h-8 rounded-lg bg-[#d0f347] text-[#141414] flex items-center justify-center font-black">
+                <Hexagon className="w-5 h-5 fill-[#141414]" />
+              </div>
+              <span className="font-extrabold text-xl tracking-tight text-white uppercase font-mono">
+                Verity
+              </span>
             </Link>
 
-            <div className="flex items-center gap-2 pl-3 border-l border-[#2e2e2e]">
-              <div className="w-8 h-8 rounded-full bg-[#d0f347] text-[#141414] font-bold font-mono flex items-center justify-center text-xs">
-                {user?.name?.charAt(0) || 'H'}
-              </div>
-              <span className="hidden sm:inline font-bold text-white text-xs">{user?.name}</span>
-              <button
-                onClick={() => {
-                  logout();
-                  navigate('/login/hr');
-                }}
-                className="p-1.5 text-slate-400 hover:text-[#fb7185] transition-colors"
-                title="Logout"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
+            <div className="mt-8 flex flex-col gap-2">
+              {sidebarLinks.map((link, idx) => (
+                <div key={idx} onClick={link.href === '#logout' ? () => { logout(); navigate('/login/hr'); } : undefined}>
+                  <SidebarLink link={link} />
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </nav>
 
-      {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-6 pt-10">
+          <div>
+            <SidebarLink
+              link={{
+                label: user?.name || "HR Admin",
+                href: "/hr/dashboard",
+                icon: (
+                  <div className="h-7 w-7 shrink-0 rounded-full bg-[#d0f347] text-[#141414] font-bold font-mono flex items-center justify-center text-xs">
+                    {user?.name?.charAt(0) || 'H'}
+                  </div>
+                ),
+              }}
+            />
+          </div>
+        </SidebarBody>
+      </Sidebar>
+
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto pb-16">
+        {/* Main Container */}
+        <main className="max-w-7xl mx-auto px-6 pt-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
@@ -366,6 +389,7 @@ export default function HRDashboardPage() {
           </Card>
         </div>
       )}
+      </div>
     </div>
   );
 }
