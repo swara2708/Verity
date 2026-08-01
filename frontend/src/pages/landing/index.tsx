@@ -496,27 +496,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 2. REACT BITS LOGOLOOP MARQUEE BAND */}
-      <section id="partners" className="py-10 bg-[#181818] border-y border-[#2e2e2e] relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 mb-4 text-center">
-          <span className="font-mono text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-            POWERED BY ENTERPRISE PLATFORM & ECOSYSTEM INTEGRATIONS
-          </span>
-        </div>
 
-        <LogoLoop
-          logos={partnerLogos}
-          speed={90}
-          direction="left"
-          logoHeight={36}
-          gap={36}
-          pauseOnHover={true}
-          scaleOnHover={true}
-          fadeOut={true}
-          fadeOutColor="#181818"
-          ariaLabel="Enterprise ecosystem integrations"
-        />
-      </section>
 
       {/* 4. HOW IT WORKS SECTION */}
       <section id="how-it-works" className="py-24 bg-[#181818] border-t border-[#2e2e2e] relative">
@@ -730,6 +710,28 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* 7. REACT BITS LOGOLOOP MARQUEE BAND (BOTTOM ECOSYSTEM SECTION) */}
+      <section id="partners" className="py-12 bg-[#181818] border-t border-[#2e2e2e] relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 mb-4 text-center">
+          <span className="font-mono text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+            POWERED BY ENTERPRISE PLATFORM & ECOSYSTEM INTEGRATIONS
+          </span>
+        </div>
+
+        <LogoLoop
+          logos={partnerLogos}
+          speed={90}
+          direction="left"
+          logoHeight={36}
+          gap={36}
+          pauseOnHover={true}
+          scaleOnHover={true}
+          fadeOut={true}
+          fadeOutColor="#181818"
+          ariaLabel="Enterprise ecosystem integrations"
+        />
       </section>
 
       {/* Footer */}
