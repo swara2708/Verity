@@ -33,6 +33,7 @@ import CardSwap, { Card } from '../../components/ui/CardSwap';
 import BorderGlow from '../../components/ui/BorderGlow';
 import SwapColumnFeatures from '../../components/ui/SwapColumnFeatures';
 import BlurText from '../../components/ui/BlurText';
+import TextType from '../../components/ui/TextType';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -298,9 +299,16 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Text */}
           <div className="lg:col-span-6 space-y-6 scroll-popup">
-            <div className="qount-eyebrow">
-              Practice Management
-            </div>
+            <TextType
+              text={["Continuous Evidence Flywheel", "Deterministic Bias Auditing", "Practice Management Engine"]}
+              typingSpeed={60}
+              pauseDuration={1800}
+              deletingSpeed={30}
+              showCursor={true}
+              cursorCharacter="|"
+              cursorClassName="text-[#d0f347]"
+              className="qount-eyebrow font-mono text-xs font-extrabold uppercase tracking-widest text-[#d0f347]"
+            />
 
             <BlurText
               text="Bias-Aware Performance Intelligence Built for How Your Firm Actually Works"
