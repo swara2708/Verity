@@ -1,5 +1,8 @@
+import os
+import json
 from sqlmodel import Session, select
 from backend.db.schema import FeedbackEntry, DailyDraft, Evidence
+from backend.reviews.agents.llm_client import call_llm, parse_json_response
 
 def gather_evidence(employee_id: str, org_id: str, session: Session):
     """
@@ -62,11 +65,46 @@ def gather_evidence(employee_id: str, org_id: str, session: Session):
 def match_claims_to_evidence(claims: list[str], evidence_data: dict) -> list[dict]:
     """
     For each claim, searches across evidence items AND daily_drafts for the employee.
-    Tags each claim as supported (with matched evidence_id + link_url if present) or unsupported.
+    Uses Google Gemini API via call_llm if GEMINI_API_KEY is available,
+    otherwise falls back to rule-based keyword matching.
     """
     evidence_list = evidence_data.get("evidence", [])
     drafts_list = evidence_data.get("daily_drafts", [])
 
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if api_key:
+        try:
+            prompt = f"""You are an evidence retrieval and claim-matching agent.
+For each claim in the list below, determine if it is supported by the provided evidence items or daily draft logs.
+
+Claims to verify:
+{json.dumps(claims, indent=2)}
+
+Formal Evidence Items:
+{json.dumps(evidence_list, indent=2)}
+
+Daily Draft Logs:
+{json.dumps(drafts_list, indent=2)}
+
+Return ONLY valid JSON, no extra text, no markdown code fences.
+Target JSON structure:
+[
+  {{
+    "claim": "exact claim text",
+    "supported": true,
+    "evidence_id": "matched_evidence_id_or_null",
+    "link_url": "matched_link_url_or_null"
+  }}
+]
+"""
+            raw_response = call_llm(prompt)
+            parsed = parse_json_response(raw_response)
+            if isinstance(parsed, list):
+                return parsed
+        except Exception as e:
+            print(f"[Evidence Agent] Gemini API claim matching call failed, using rule-based matching: {e}")
+
+    # Fallback rule-based matching across formal evidence and daily drafts
     results = []
 
     for claim in claims:
