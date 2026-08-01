@@ -82,9 +82,10 @@ except Exception as e:
 
 # Step 5: HR can generate an invite link (POST /invites)
 invite_token = None
+test_emp_email = f"employee_{os.urandom(4).hex()}@testcorp.com"
 try:
     if hr_token:
-        inv_res = client.post("/api/invites", json={"email": "employee_e2e@testcorp.com", "role": "employee", "department": "Engineering"}, headers={"Authorization": f"Bearer {hr_token}"})
+        inv_res = client.post("/api/invites", json={"email": test_emp_email, "role": "employee", "department": "Engineering"}, headers={"Authorization": f"Bearer {hr_token}"})
         if inv_res.status_code == 201 and "token" in inv_res.json():
             invite_token = inv_res.json()["token"]
             report(5, "HR generate invite link (POST /invites)", "PASS", f"Generated invite_token='{invite_token}', url='{inv_res.json().get('invite_url')}'")
@@ -165,11 +166,11 @@ except Exception as e:
 # Step 10: Approved user can log in via /login (not /login/hr)
 emp_token = None
 try:
-    if test_user_id:
+    if test_user_id and test_emp_email:
         # 10a: Login via /login (should PASS)
-        login_res = client.post("/api/auth/login", json={"email": "employee_e2e@testcorp.com", "password": "UserPassword123!"})
+        login_res = client.post("/api/auth/login", json={"email": test_emp_email, "password": "UserPassword123!"})
         # 10b: Attempt login via /login/hr (should FAIL with 403)
-        hr_login_attempt = client.post("/api/auth/login/hr", json={"email": "employee_e2e@testcorp.com", "password": "UserPassword123!"})
+        hr_login_attempt = client.post("/api/auth/login/hr", json={"email": test_emp_email, "password": "UserPassword123!"})
         
         if login_res.status_code == 200 and "token" in login_res.json() and hr_login_attempt.status_code == 403:
             emp_token = login_res.json()["token"]
