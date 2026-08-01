@@ -8,12 +8,6 @@ import {
   ExternalLink,
   Sparkles,
   Hexagon,
-  CheckCircle2,
-  AlertTriangle,
-  Clock,
-  ShieldCheck,
-  Zap,
-  GitBranch,
   ArrowRight
 } from 'lucide-react';
 import BorderGlow from './BorderGlow';
@@ -110,15 +104,11 @@ export const sourcesData: SourceItem[] = [
   },
 ];
 
-const CUBIC_EASE = [0.2, 0.7, 0.2, 1];
+const CUBIC_EASE: [number, number, number, number] = [0.2, 0.7, 0.2, 1];
 
 export const SwapColumnFeatures: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const activeSource = sourcesData[activeIndex];
-
-  // Animated Y offsets for the SVG connector line matching the 3 left cards
-  const connectorYPositions = [60, 190, 320];
-  const activeConnectorY = connectorYPositions[activeIndex];
 
   return (
     <div className="w-full">
@@ -165,20 +155,13 @@ export const SwapColumnFeatures: React.FC = () => {
         {/* CENTER: Dashed Connector Line with Animated Glowing Node */}
         <div className="hidden lg:flex lg:col-span-2 flex-col items-center justify-center relative h-96">
           <svg className="absolute inset-0 w-full h-full" overflow="visible">
-            {/* Background static dashed connector paths */}
+            {/* Static background dashed connector lines */}
             <path d="M 0 60 C 60 60, 60 190, 120 190" fill="none" stroke="#2e2e2e" strokeWidth="2" strokeDasharray="4 4" />
             <path d="M 0 190 L 120 190" fill="none" stroke="#2e2e2e" strokeWidth="2" strokeDasharray="4 4" />
             <path d="M 0 320 C 60 320, 60 190, 120 190" fill="none" stroke="#2e2e2e" strokeWidth="2" strokeDasharray="4 4" />
 
-            {/* Active animated connecting path */}
+            {/* Active connecting path smoothly animating over ~250ms */}
             <motion.path
-              d={
-                activeIndex === 0
-                  ? "M 0 60 C 60 60, 60 190, 120 190"
-                  : activeIndex === 1
-                  ? "M 0 190 L 120 190"
-                  : "M 0 320 C 60 320, 60 190, 120 190"
-              }
               fill="none"
               stroke="#d0f347"
               strokeWidth="3"
@@ -206,9 +189,9 @@ export const SwapColumnFeatures: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN: Single Detail Panel with Framer Motion Swap Animation */}
+        {/* RIGHT COLUMN: Single Detail Panel with Staggered Framer Motion Swap Animation */}
         <div className="lg:col-span-6 space-y-4">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout">
             <motion.div
               key={activeSource.id}
               initial={{ opacity: 0, x: -24 }}
@@ -216,11 +199,12 @@ export const SwapColumnFeatures: React.FC = () => {
               exit={{ opacity: 0, x: 24 }}
               transition={{
                 duration: 0.25,
+                delay: 0.08,
                 ease: CUBIC_EASE,
               }}
               className="space-y-4"
             >
-              {/* White Detail Card - BUG FIXED: Title sits directly on white canvas in solid dark text */}
+              {/* White Detail Card - BUG FIXED: Title sits directly on white canvas in solid dark text (NO dark overlay box!) */}
               <div className="bg-white rounded-2xl p-6 text-[#141414] shadow-2xl space-y-4 border border-slate-200">
                 {/* Top Row: Status Pill + Timestamp */}
                 <div className="flex items-center justify-between">
@@ -230,7 +214,7 @@ export const SwapColumnFeatures: React.FC = () => {
                   <span className="text-[11px] font-mono font-bold text-slate-500">{activeSource.timestamp}</span>
                 </div>
 
-                {/* Main Title sitting CLEANLY on white background (NO dark overlay box!) */}
+                {/* Main Title sitting CLEANLY on white background */}
                 <div>
                   <h3 className="font-extrabold text-xl sm:text-2xl text-[#141414] tracking-tight leading-snug">
                     {activeSource.detailTitle}
