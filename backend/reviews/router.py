@@ -176,6 +176,8 @@ def get_review(
         "bias_report": bias_dict
     }
 
+from backend.utils.email import send_review_status_email
+
 @router.post("/{id}/approve")
 def approve_review(
     id: str,
@@ -194,6 +196,14 @@ def approve_review(
     review.approved_at = datetime.utcnow()
     session.add(review)
     session.commit()
+
+    # Send status email notification (failsafe try/except)
+    employee = session.get(User, review.employee_id)
+    if employee and employee.email:
+        try:
+            send_review_status_email(to_email=employee.email, employee_name=employee.name, status="approved")
+        except Exception as e:
+            print(f"[Email Error] Failed to send approval email to {employee.email}: {e}")
 
     return {
         "review_id": review.id,
@@ -218,6 +228,14 @@ def reject_review(
     review.status = "needs_input"
     session.add(review)
     session.commit()
+
+    # Send status email notification (failsafe try/except)
+    employee = session.get(User, review.employee_id)
+    if employee and employee.email:
+        try:
+            send_review_status_email(to_email=employee.email, employee_name=employee.name, status="needs_input", reason=req.reason or "")
+        except Exception as e:
+            print(f"[Email Error] Failed to send rejection email to {employee.email}: {e}")
 
     return {
         "review_id": review.id,
