@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Verity</title>
+  <script>
+    // When Vercel hits a 404 on a client-side route like /hr/dashboard,
+    // it serves this file. We redirect to the HashRouter equivalent: /#/hr/dashboard
+    var path = window.location.pathname;
+    var search = window.location.search;
+    window.location.replace('/#' + path + search);
+  </script>
+</head>
+<body></body>
+</html>
