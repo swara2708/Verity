@@ -31,6 +31,7 @@ import {
 import LogoLoop, { LogoItem } from '../../components/ui/LogoLoop';
 import CardSwap, { Card } from '../../components/ui/CardSwap';
 import BorderGlow from '../../components/ui/BorderGlow';
+import SwapColumnFeatures from '../../components/ui/SwapColumnFeatures';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -530,141 +531,8 @@ export default function LandingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative">
-          {/* Left Column: Source Integration Nodes */}
-          <div className="lg:col-span-4 space-y-4 scroll-popup z-10">
-            {leftNodes.map((node) => {
-              const IconComp = node.icon;
-              const isActive = activeNode === node.id;
-              return (
-                <div
-                  key={node.id}
-                  onClick={() => setActiveNode(node.id)}
-                  className={`p-5 rounded-2xl border transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-[#222222] border-[#d0f347] shadow-lg shadow-[#d0f347]/10 scale-[1.02]'
-                      : 'bg-[#1c1c1c] border-[#2e2e2e] hover:border-slate-500 opacity-70'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className={`p-2 rounded-xl ${isActive ? 'bg-[#d0f347] text-[#141414]' : 'bg-[#282828] text-slate-300'}`}>
-                      <IconComp className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-mono font-bold text-[#d0f347] uppercase tracking-wider">{node.category}</div>
-                      <h4 className="font-extrabold text-base text-white">{node.title}</h4>
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-400 font-mono pl-11">{node.subtitle}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Middle Animated Node Connector with SVG Paths */}
-          <div className="hidden lg:flex lg:col-span-2 flex-col items-center justify-center relative h-96">
-            <svg className="absolute inset-0 w-full h-full" overflow="visible">
-              <path
-                d="M 0 60 C 60 60, 60 190, 120 190"
-                fill="none"
-                stroke="#2e2e2e"
-                strokeWidth="2"
-                strokeDasharray="4 4"
-              />
-              <path
-                d="M 0 190 L 120 190"
-                fill="none"
-                stroke="#2e2e2e"
-                strokeWidth="2"
-                strokeDasharray="4 4"
-              />
-              <path
-                d="M 0 320 C 60 320, 60 190, 120 190"
-                fill="none"
-                stroke="#2e2e2e"
-                strokeWidth="2"
-                strokeDasharray="4 4"
-              />
-
-              <path
-                d={
-                  activeNode === 0
-                    ? "M 0 60 C 60 60, 60 190, 120 190"
-                    : activeNode === 1
-                    ? "M 0 190 L 120 190"
-                    : "M 0 320 C 60 320, 60 190, 120 190"
-                }
-                fill="none"
-                stroke="#d0f347"
-                strokeWidth="3"
-                strokeDasharray="6 6"
-                className="animate-pulse"
-              />
-            </svg>
-
-            <div className="z-20 w-10 h-10 rounded-xl bg-[#d0f347] text-[#141414] flex items-center justify-center font-black shadow-xl shadow-[#d0f347]/30 animate-bounce">
-              <Hexagon className="w-6 h-6 fill-[#141414]" />
-            </div>
-          </div>
-
-          {/* Right Column: Dynamic Connected AI Analysis Dashboard */}
-          <div className="lg:col-span-6 scroll-popup space-y-4">
-            <div className="bg-white rounded-2xl p-5 text-[#141414] shadow-2xl space-y-3 border border-slate-200">
-              <div className="flex items-center justify-between">
-                <span className={`text-xs font-mono font-extrabold px-3 py-1 rounded-full border ${currentPreview.riskPillColor}`}>
-                  {currentPreview.riskPill}
-                </span>
-                <span className="text-[11px] font-mono font-bold text-slate-500">Tue, Sep 30 &bull; Cycle v2</span>
-              </div>
-
-              <div>
-                <h3 className="font-extrabold text-lg text-[#141414]">{currentPreview.title}</h3>
-                <p className="text-xs text-slate-600 font-medium mt-0.5">{currentPreview.detailText}</p>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                <span className={`text-xs font-bold font-mono px-3 py-1 rounded-lg ${currentPreview.statusColor}`}>
-                  {currentPreview.status}
-                </span>
-                <Link to="/hr/dashboard" className="text-xs font-extrabold text-[#141414] hover:underline flex items-center gap-1">
-                  Inspect Report <ExternalLink className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              {currentPreview.stats.map((st, idx) => (
-                <div key={idx} className="bg-[#222222] border border-[#2e2e2e] p-3.5 rounded-xl space-y-1">
-                  <div className="text-[10px] font-mono text-slate-400 font-bold uppercase">{st.label}</div>
-                  <div className={`text-sm font-extrabold ${st.color}`}>{st.val}</div>
-                </div>
-              ))}
-            </div>
-
-            <BorderGlow
-              animated={true}
-              glowColor="72 85 62"
-              backgroundColor="#222222"
-              borderRadius={16}
-              glowRadius={30}
-              glowIntensity={1.2}
-              colors={['#d0f347', '#beeb30', '#10b981']}
-            >
-              <div className="p-5 space-y-3">
-                <div className="flex items-center gap-2 text-[#d0f347] font-extrabold text-xs uppercase tracking-wider">
-                  <Sparkles className="w-4 h-4 text-[#d0f347]" /> VERITY AI ANALYSIS
-                </div>
-                <div className="space-y-2 text-xs text-slate-300">
-                  {currentPreview.aiBullets.map((b, idx) => (
-                    <div key={idx} className="flex items-start gap-2">
-                      <span className="text-[#d0f347] font-bold">◇</span>
-                      <span>{b}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </BorderGlow>
-          </div>
+        <div className="scroll-popup">
+          <SwapColumnFeatures />
         </div>
       </section>
 
