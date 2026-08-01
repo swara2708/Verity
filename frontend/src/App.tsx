@@ -2,16 +2,16 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-import LandingPage from './pages/landing';
-import HRLoginPage from './pages/login-hr';
-import EmployeeLoginPage from './pages/login-employee';
-import OnboardingPage from './pages/onboarding';
-import JoinTokenPage from './pages/join-token/index';
-import HRDashboardPage from './pages/hr-dashboard';
-import HRRequestsPage from './pages/hr-requests';
-import HRReviewPage from './pages/hr-review-employee/index';
-import EmployeePanelPage from './pages/panel';
-import PanelDailyPage from './pages/panel-daily';
+import LandingPage from './pages/landing/index.tsx';
+import HRLoginPage from './pages/login-hr/index.tsx';
+import EmployeeLoginPage from './pages/login-employee/index.tsx';
+import OnboardingPage from './pages/onboarding/index.tsx';
+import JoinTokenPage from './pages/join-token/index.tsx';
+import HRDashboardPage from './pages/hr-dashboard/index.tsx';
+import HRRequestsPage from './pages/hr-requests/index.tsx';
+import HRReviewPage from './pages/hr-review-employee/index.tsx';
+import EmployeePanelPage from './pages/panel/index.tsx';
+import PanelDailyPage from './pages/panel-daily/index.tsx';
 
 export default function App() {
   return (
