@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { PlusCircle, ArrowLeft, Send, CheckCircle2, Calendar } from 'lucide-react';
+import { ArrowLeft, Send, CheckCircle2, Clock } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
+import { Logo, Button, Card } from '../../components/ui/primitives';
+
+interface DraftItem {
+  id: string;
+  entry_date: string;
+  content: string;
+}
 
 export default function PanelDailyPage() {
   const navigate = useNavigate();
@@ -11,6 +18,21 @@ export default function PanelDailyPage() {
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submittedDate, setSubmittedDate] = useState<string | null>(null);
+  const [pastDrafts, setPastDrafts] = useState<DraftItem[]>([]);
+
+  const fetchPastDrafts = async () => {
+    if (!user) return;
+    try {
+      const res = await apiFetch<{ drafts: DraftItem[] }>(`/daily-drafts/${user.id}`);
+      setPastDrafts(res.drafts || []);
+    } catch (err) {
+      console.error('Failed to fetch past daily drafts:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPastDrafts();
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +47,15 @@ export default function PanelDailyPage() {
           content: content,
         }),
       });
+
+      const newEntry: DraftItem = {
+        id: res.draft_id,
+        entry_date: res.entry_date,
+        content: content,
+      };
+
       setSubmittedDate(res.entry_date);
+      setPastDrafts((prev) => [newEntry, ...prev]);
     } catch (err: any) {
       alert(err.message || 'Failed to submit daily check-in');
     } finally {
@@ -34,72 +64,95 @@ export default function PanelDailyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-4 relative overflow-hidden">
-      <div className="w-full max-w-lg z-10">
+    <div className="min-h-screen bg-[#161616] text-white p-6 flex flex-col justify-center items-center">
+      <div className="w-full max-w-xl">
         <div className="flex items-center justify-between mb-6">
-          <Link to="/panel" className="px-3 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all">
-            <ArrowLeft className="w-4 h-4" /> Back to Panel
+          <Link to="/panel">
+            <Button variant="outline" size="sm" className="gap-1.5">
+              <ArrowLeft className="w-3.5 h-3.5" /> Return to Panel
+            </Button>
           </Link>
-          <span className="text-xs text-slate-500 font-mono">Verity Check-in Log</span>
+          <Logo />
         </div>
 
         {!submittedDate ? (
-          <div className="glass-panel p-8 rounded-2xl border border-slate-800 shadow-2xl">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-blue-600/10 border border-blue-500/30 text-blue-400 flex items-center justify-center">
-                <PlusCircle className="w-6 h-6" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-extrabold text-white">Daily Progress Check-in</h1>
-                <p className="text-xs text-slate-400">Log short periodic updates to build your evidence timeline</p>
-              </div>
+          <Card className="p-8 shadow-2xl mb-8 space-y-6">
+            <div>
+              <h1 className="text-2xl font-bold text-white">Daily Progress Check-in</h1>
+              <p className="text-xs font-mono text-slate-400 mt-1">Log short periodic updates to build your continuous evidence timeline</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">What did you work on today?</label>
+                <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  What did you work on today?
+                </label>
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="e.g. Shipped the invite-token backend endpoints, wrote 3 integration tests, unblocked frontend auth flow..."
-                  className="w-full p-4 bg-slate-900/80 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-blue-500 text-sm h-36"
+                  placeholder="e.g. Shipped the invite token authentication flow, paired with frontend team on JWT claims, and wrote unit tests..."
+                  className="w-full p-3.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347] h-32 leading-relaxed"
                   required
                 />
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 transition-all text-sm disabled:opacity-50"
+                variant="primary"
+                size="lg"
+                className="w-full justify-center gap-2"
               >
-                {submitting ? 'Submitting Entry...' : 'Save Check-in Log'}
-                <Send className="w-4 h-4" />
-              </button>
+                {submitting ? 'Saving Entry...' : 'Save Daily Check-in Log'}
+                <Send className="w-3.5 h-3.5" />
+              </Button>
             </form>
-          </div>
+          </Card>
         ) : (
-          <div className="glass-panel p-8 rounded-2xl border border-emerald-500/30 text-center shadow-2xl">
-            <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-white mb-2">Check-in Recorded!</h2>
-            <p className="text-slate-300 text-sm mb-6">
-              Log entry successfully saved for <span className="font-mono text-emerald-400 font-bold">{submittedDate}</span>.
+          <Card className="p-8 shadow-2xl text-center mb-8 space-y-4">
+            <CheckCircle2 className="w-12 h-12 text-[#d0f347] mx-auto mb-2" />
+            <h2 className="text-2xl font-bold text-white">Check-in Recorded</h2>
+            <p className="text-slate-400 text-xs">
+              Log entry saved for <span className="font-mono text-[#d0f347] font-bold">{submittedDate}</span>.
             </p>
-            <div className="flex justify-center gap-4">
-              <button
+            <div className="flex justify-center gap-3 pt-2">
+              <Button
                 onClick={() => {
                   setSubmittedDate(null);
                   setContent('');
                 }}
-                className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl"
+                variant="outline"
+                size="sm"
               >
                 + Log Another Entry
-              </button>
-              <Link to="/panel" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl">
-                Return to Panel
+              </Button>
+              <Link to="/panel">
+                <Button variant="primary" size="sm">Return to Panel</Button>
               </Link>
             </div>
-          </div>
+          </Card>
         )}
+
+        {/* Running List of Past Entries */}
+        <Card className="p-6 shadow-2xl space-y-4">
+          <div className="font-mono text-xs font-bold text-white uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-[#d0f347]" />
+            RUNNING HISTORY OF PAST CHECK-INS ({pastDrafts.length})
+          </div>
+
+          {pastDrafts.length === 0 ? (
+            <p className="text-xs text-slate-500 font-mono text-center py-4">No past check-in logs recorded yet.</p>
+          ) : (
+            <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+              {pastDrafts.map((d) => (
+                <div key={d.id} className="p-3.5 bg-[#181818] rounded-xl border border-[#2e2e2e] text-xs space-y-1">
+                  <div className="font-mono text-[11px] font-bold text-[#d0f347]">{d.entry_date}</div>
+                  <p className="text-slate-200 leading-relaxed">{d.content}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
       </div>
     </div>
   );

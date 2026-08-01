@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, AlertTriangle, CheckCircle, RefreshCw, ArrowLeft, FileText, Check, X, Sparkles, TrendingUp, Target } from 'lucide-react';
+import { ArrowLeft, Check, X, Sparkles, TrendingUp, Target, FileText, CheckCircle2 } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
+import { Logo, Button, Card, StatusBadge, Claim, ScoreGauge, AuditFlagCard } from '../../components/ui/primitives';
+
+interface ClaimEvidenceItem {
+  claim: string;
+  supported: boolean;
+  evidence_id?: string | null;
+  link_url?: string | null;
+}
 
 interface ReviewData {
   review_id: string;
@@ -12,6 +20,7 @@ interface ReviewData {
     growth_areas?: string[];
     impact_highlights?: string[];
     goal_progress?: { goal: string; status: string }[];
+    claim_evidence?: ClaimEvidenceItem[];
   };
   bias_report: {
     recency_score: number;
@@ -38,7 +47,7 @@ export default function HRReviewPage() {
       const data = await apiFetch<ReviewData>(`/reviews/${employeeId}`);
       setReview(data);
     } catch (err: any) {
-      console.log('No existing review found or failed to fetch:', err);
+      console.log('No existing review found:', err);
     } finally {
       setLoading(false);
     }
@@ -59,7 +68,7 @@ export default function HRReviewPage() {
       const freshData = await apiFetch<ReviewData>(`/reviews/${res.review_id}`);
       setReview(freshData);
     } catch (err: any) {
-      alert(err.message || 'Failed to trigger agent pipeline');
+      alert(err.message || 'Failed to trigger review pipeline');
     } finally {
       setGenerating(false);
     }
@@ -97,81 +106,81 @@ export default function HRReviewPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" />
+      <div className="min-h-screen bg-[#161616] flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d0f347]" />
       </div>
     );
   }
 
   const bias = review?.bias_report;
+  const claimMap = new Map<string, ClaimEvidenceItem>();
+  review?.report?.claim_evidence?.forEach((ce) => {
+    claimMap.set(ce.claim.trim().toLowerCase(), ce);
+  });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 pb-16">
-      {/* Top Navbar */}
-      <nav className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
+    <div className="min-h-screen bg-[#161616] text-white pb-16">
+      {/* Top Nav */}
+      <nav className="border-b border-[#2e2e2e] bg-[#161616]/90 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/hr/dashboard" className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
-              <ArrowLeft className="w-5 h-5" />
+            <Link to="/hr/dashboard" className="p-2 rounded-xl bg-[#181818] border border-[#2e2e2e] text-slate-300 hover:text-white transition-colors">
+              <ArrowLeft className="w-4 h-4" />
             </Link>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-indigo-400" />
-              <span className="font-extrabold text-lg text-white">Verity Review & Bias Intelligence</span>
-            </div>
+            <Logo />
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleGenerateReview}
-              disabled={generating}
-              className="px-4 py-2.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all disabled:opacity-50"
-            >
-              <Sparkles className="w-4 h-4 text-indigo-400" />
-              {generating ? 'Running Agents...' : 'Run Agent Pipeline'}
-            </button>
-          </div>
+          <Button
+            onClick={handleGenerateReview}
+            disabled={generating}
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-[#d0f347]" />
+            {generating ? 'Running Agents...' : 'Run Agent Pipeline'}
+          </Button>
         </div>
       </nav>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-6 pt-8">
+      <main className="max-w-7xl mx-auto px-6 pt-10">
+        {/* Header: Employee Name + Department + StatusBadge */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-extrabold text-white">Performance Review Inspection</h1>
-              <span className="text-xs px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-mono">
-                {employeeId}
+              <h1 className="text-3xl font-extrabold text-white">Dev Patel</h1>
+              <span className="font-mono text-xs px-3 py-1 rounded-full bg-[#181818] border border-[#2e2e2e] text-[#d0f347] font-bold">
+                Engineering &bull; {employeeId}
               </span>
             </div>
-            <p className="text-slate-400 text-sm mt-1">Review draft generated via evidence retrieval & synthesis pipeline</p>
+            <p className="text-slate-400 text-xs font-mono mt-1">Review draft synthesized with claim-evidence verification</p>
           </div>
 
           {review && (
             <div className="flex items-center gap-3">
-              {review.status === 'approved' ? (
-                <span className="px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl text-xs font-bold flex items-center gap-1.5">
-                  <CheckCircle className="w-4 h-4" /> Review Approved
-                </span>
-              ) : review.status === 'needs_input' ? (
-                <span className="px-4 py-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-xl text-xs font-bold flex items-center gap-1.5">
-                  <AlertTriangle className="w-4 h-4" /> Returned for Input
-                </span>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <button
+              <StatusBadge status={review.status} />
+
+              {review.status !== 'approved' && review.status !== 'needs_input' && (
+                <div className="flex items-center gap-2">
+                  <Button
                     onClick={() => setShowRejectModal(true)}
                     disabled={actionLoading}
-                    className="px-4 py-2.5 bg-slate-900 hover:bg-amber-500/20 text-slate-300 hover:text-amber-300 border border-slate-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all"
+                    variant="outline"
+                    size="sm"
+                    className="gap-1"
                   >
-                    <X className="w-4 h-4" /> Request Input
-                  </button>
-                  <button
+                    <X className="w-3.5 h-3.5" /> Request Input
+                  </Button>
+                  <Button
                     onClick={handleApprove}
                     disabled={actionLoading}
-                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-600/20 flex items-center gap-1.5 transition-all"
+                    variant="primary"
+                    size="sm"
+                    className="gap-1"
                   >
-                    <Check className="w-4 h-4" /> Approve Review
-                  </button>
+                    <Check className="w-3.5 h-3.5" /> Approve Review
+                  </Button>
                 </div>
               )}
             </div>
@@ -179,186 +188,217 @@ export default function HRReviewPage() {
         </div>
 
         {!review ? (
-          <div className="glass-panel p-12 rounded-2xl border border-slate-800 text-center">
-            <FileText className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-            <h3 className="text-xl font-bold text-white mb-2">No Review Generated Yet</h3>
-            <p className="text-slate-400 text-xs mb-6">Click "Run Agent Pipeline" above to trigger evidence retrieval, synthesis, and bias detection.</p>
-            <button
-              onClick={handleGenerateReview}
-              disabled={generating}
-              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs shadow-lg shadow-indigo-600/30 transition-all"
-            >
+          <Card className="p-12 text-center shadow-2xl space-y-4">
+            <FileText className="w-10 h-10 text-slate-500 mx-auto mb-3" />
+            <h3 className="text-2xl font-bold text-white mb-1">No Review Draft Generated</h3>
+            <p className="text-slate-400 text-xs mb-6">Click "Run Agent Pipeline" above to trigger evidence retrieval, synthesis, and claim matching.</p>
+            <Button onClick={handleGenerateReview} disabled={generating} variant="primary" size="md">
               {generating ? 'Running Agents...' : 'Trigger Review Generation'}
-            </button>
-          </div>
+            </Button>
+          </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-                <h3 className="text-sm uppercase font-bold text-emerald-400 tracking-wider mb-4 flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4" /> Key Strengths
-                </h3>
-                <ul className="space-y-2.5">
-                  {review.report?.strengths?.map((s, idx) => (
-                    <li key={idx} className="text-sm text-slate-200 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800/80 flex items-start gap-3">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
-                      <span>{s}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* LEFT (Wide, 8 cols): Draft Report */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* STRENGTHS SECTION */}
+              <Card className="shadow-2xl space-y-4">
+                <div className="font-mono text-xs font-bold text-[#34d399] uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#34d399]" />
+                  STRENGTHS (VERIFIED EVIDENCE)
+                </div>
+                <div className="space-y-4 text-sm leading-relaxed text-slate-200">
+                  {review.report?.strengths?.map((s, idx) => {
+                    const match = claimMap.get(s.trim().toLowerCase());
+                    return (
+                      <div key={idx} className="p-3.5 bg-[#181818] rounded-xl border border-[#2e2e2e]">
+                        <Claim
+                          text={s}
+                          supported={match ? match.supported : true}
+                          sourceId={match?.evidence_id}
+                          linkUrl={match?.link_url}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
 
-              <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-                <h3 className="text-sm uppercase font-bold text-amber-400 tracking-wider mb-4 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4" /> Growth Areas
-                </h3>
-                <ul className="space-y-2.5">
-                  {review.report?.growth_areas?.map((g, idx) => (
-                    <li key={idx} className="text-sm text-slate-200 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800/80 flex items-start gap-3">
-                      <span className="w-2 h-2 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
-                      <span>{g}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* GROWTH AREAS SECTION */}
+              <Card className="shadow-2xl space-y-4">
+                <div className="font-mono text-xs font-bold text-[#fbbf24] uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-[#fbbf24]" />
+                  GROWTH AREAS (CLAIM AUDIT)
+                </div>
+                <div className="space-y-4 text-sm leading-relaxed text-slate-200">
+                  {review.report?.growth_areas?.map((g, idx) => {
+                    const match = claimMap.get(g.trim().toLowerCase());
+                    return (
+                      <div key={idx} className="p-3.5 bg-[#181818] rounded-xl border border-[#2e2e2e]">
+                        <Claim
+                          text={g}
+                          supported={match ? match.supported : true}
+                          sourceId={match?.evidence_id}
+                          linkUrl={match?.link_url}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
 
-              <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-                <h3 className="text-sm uppercase font-bold text-indigo-400 tracking-wider mb-4 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" /> Impact Highlights
-                </h3>
-                <ul className="space-y-2.5">
-                  {review.report?.impact_highlights?.map((h, idx) => (
-                    <li key={idx} className="text-sm text-slate-200 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800/80 flex items-start gap-3">
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 mt-1.5 flex-shrink-0" />
-                      <span>{h}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* IMPACT HIGHLIGHTS */}
+              <Card className="shadow-2xl space-y-4">
+                <div className="font-mono text-xs font-bold text-[#d0f347] uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#d0f347]" />
+                  IMPACT HIGHLIGHTS
+                </div>
+                <div className="space-y-4 text-sm leading-relaxed text-slate-200">
+                  {review.report?.impact_highlights?.map((h, idx) => {
+                    const match = claimMap.get(h.trim().toLowerCase());
+                    return (
+                      <div key={idx} className="p-3.5 bg-[#181818] rounded-xl border border-[#2e2e2e]">
+                        <Claim
+                          text={h}
+                          supported={match ? match.supported : true}
+                          sourceId={match?.evidence_id}
+                          linkUrl={match?.link_url}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
 
-              <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-                <h3 className="text-sm uppercase font-bold text-slate-300 tracking-wider mb-4 flex items-center gap-2">
-                  <Target className="w-4 h-4 text-indigo-400" /> Goal Progress
-                </h3>
-                <div className="space-y-3">
+              {/* GOAL PROGRESS */}
+              <Card className="shadow-2xl space-y-3">
+                <div className="font-mono text-xs font-bold text-white uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center gap-2">
+                  <Target className="w-4 h-4 text-[#d0f347]" />
+                  CYCLE GOAL PROGRESS
+                </div>
+                <div className="space-y-2.5">
                   {review.report?.goal_progress?.map((goalItem, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3.5 bg-slate-900/60 rounded-xl border border-slate-800/80 text-sm">
-                      <span className="font-medium text-white">{goalItem.goal}</span>
-                      <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 uppercase">
+                    <div key={idx} className="flex items-center justify-between p-3.5 bg-[#181818] rounded-xl border border-[#2e2e2e] text-xs">
+                      <span className="font-bold text-white">{goalItem.goal}</span>
+                      <span className="font-mono text-[11px] font-extrabold px-3 py-1 rounded-full bg-[#d0f347]/15 text-[#d0f347] uppercase border border-[#d0f347]/30">
                         {goalItem.status}
                       </span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             </div>
 
-            <div className="space-y-6">
-              <div className="glass-panel p-6 rounded-2xl border border-indigo-500/30 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none" />
-
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <ShieldCheck className="w-5 h-5 text-indigo-400" />
-                    Bias Analysis Engine
-                  </h3>
-                  <span className="text-xs text-slate-400 font-mono">Pure Math</span>
+            {/* RIGHT (Narrow, 4 cols): Bias Analysis Panel */}
+            <div className="lg:col-span-4 space-y-6">
+              <Card className="shadow-2xl space-y-6 sticky top-24 border-[#d0f347]/30">
+                <div className="font-mono text-xs font-bold text-white uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center justify-between">
+                  <span>BIAS ANALYSIS PANEL</span>
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#d0f347]/15 text-[#d0f347] font-bold border border-[#d0f347]/30">PURE MATH</span>
                 </div>
 
-                <div className="space-y-5 mb-6">
-                  <div>
-                    <div className="flex justify-between text-xs font-semibold mb-1.5">
-                      <span className="text-slate-300">Recency Bias Index</span>
-                      <span className={bias && bias.recency_score > 0.7 ? 'text-red-400 font-bold' : 'text-emerald-400 font-bold'}>
-                        {Math.round((bias?.recency_score || 0) * 100)}%
-                      </span>
-                    </div>
-                    <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-                      <div
-                        className={`h-full transition-all duration-500 ${bias && bias.recency_score > 0.7 ? 'bg-red-500' : 'bg-emerald-500'}`}
-                        style={{ width: `${(bias?.recency_score || 0) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-[10px] text-slate-500 mt-1 block">Lower is better (&lt; 70% threshold)</span>
-                  </div>
+                <div className="space-y-5">
+                  <ScoreGauge
+                    label="Recency Bias Index"
+                    score={bias?.recency_score || 0}
+                    threshold={0.70}
+                    invertRisk={true}
+                    subtext="70% max recency threshold marker."
+                  />
 
-                  <div>
-                    <div className="flex justify-between text-xs font-semibold mb-1.5">
-                      <span className="text-slate-300">Source Diversity Score</span>
-                      <span className={bias && bias.diversity_score < 0.5 ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold'}>
-                        {Math.round((bias?.diversity_score || 0) * 100)}%
-                      </span>
-                    </div>
-                    <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-                      <div
-                        className={`h-full transition-all duration-500 ${bias && bias.diversity_score < 0.5 ? 'bg-amber-500' : 'bg-emerald-500'}`}
-                        style={{ width: `${(bias?.diversity_score || 0) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-[10px] text-slate-500 mt-1 block">Higher is better (Self + Peer + Manager)</span>
-                  </div>
+                  <ScoreGauge
+                    label="Source Diversity Score"
+                    score={bias?.diversity_score || 0}
+                    threshold={0.50}
+                    invertRisk={false}
+                    subtext="Requires 2+ unique sources (Self/Peer/Manager)."
+                  />
 
-                  <div className="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-300">Unsupported Claims</span>
-                    <span className={`text-sm font-bold ${bias && bias.unsupported_claims > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                  <div className="p-4 bg-[#181818] rounded-xl border border-[#2e2e2e] flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-slate-300">Unsupported Claims</span>
+                    <span className={`font-mono text-sm font-black ${bias && bias.unsupported_claims > 0 ? 'text-[#fb7185]' : 'text-[#d0f347]'}`}>
                       {bias?.unsupported_claims || 0}
                     </span>
                   </div>
                 </div>
 
+                {/* Audit Flags Card */}
                 <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Detected Audit Flags</h4>
+                  <div className="font-mono text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">
+                    HUMAN-READABLE AUDIT FLAGS
+                  </div>
                   {bias?.flags && bias.flags.length > 0 ? (
                     <div className="space-y-2.5">
                       {bias.flags.map((flag, idx) => (
-                        <div key={idx} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-300 text-xs flex items-start gap-2.5">
-                          <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                          <span>{flag}</span>
-                        </div>
+                        <AuditFlagCard key={idx} flag={flag} />
                       ))}
                     </div>
                   ) : (
-                    <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-300 text-xs flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-400" />
-                      <span>Clean review case — no significant bias flags detected.</span>
+                    <div className="p-3.5 bg-[#10b981]/15 border border-[#10b981]/30 rounded-xl text-[#34d399] text-xs flex items-center gap-2 font-bold">
+                      <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                      <span>Zero bias flags detected.</span>
                     </div>
                   )}
                 </div>
-              </div>
+
+                {/* Action Buttons Pinned Bottom */}
+                <div className="pt-4 border-t border-[#2e2e2e] flex flex-col gap-2.5">
+                  <Button
+                    onClick={handleApprove}
+                    disabled={actionLoading || review.status === 'approved'}
+                    variant="primary"
+                    size="md"
+                    className="w-full justify-center gap-1.5"
+                  >
+                    <Check className="w-4 h-4" /> Approve Review
+                  </Button>
+                  <Button
+                    onClick={() => setShowRejectModal(true)}
+                    disabled={actionLoading}
+                    variant="outline"
+                    size="md"
+                    className="w-full justify-center gap-1.5"
+                  >
+                    <X className="w-4 h-4" /> Request Additional Input
+                  </Button>
+                </div>
+              </Card>
             </div>
           </div>
         )}
       </main>
 
+      {/* Reject Modal */}
       {showRejectModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex justify-center items-center p-4 z-50">
-          <div className="glass-panel p-6 rounded-2xl max-w-md w-full border border-slate-800 shadow-2xl">
-            <h3 className="text-xl font-bold text-white mb-2">Request Additional Evidence</h3>
-            <p className="text-slate-400 text-xs mb-4">Set status to Needs Input so manager or peers can submit further daily drafts or feedback.</p>
+        <div className="fixed inset-0 bg-[#141414]/80 backdrop-blur-md flex justify-center items-center p-4 z-50 animate-backdrop-enter">
+          <Card className="max-w-md w-full p-6 shadow-2xl space-y-4 animate-modal-card-enter">
+            <h3 className="text-xl font-bold text-white">Request Additional Evidence</h3>
+            <p className="text-xs text-slate-400">Returns review status to 'Needs Input' for further team draft entries.</p>
 
             <textarea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="e.g. Needs peer feedback before this review can be finalized."
-              className="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500 mb-4 h-24"
+              placeholder="e.g. Requires peer feedback from engineering team before finalization."
+              className="w-full p-3.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347] h-28"
             />
 
-            <div className="flex justify-end gap-3">
-              <button
+            <div className="flex justify-end gap-3 pt-3 border-t border-[#2e2e2e]">
+              <Button
                 onClick={() => setShowRejectModal(false)}
-                className="px-4 py-2 text-slate-400 hover:text-white text-xs font-semibold"
+                variant="outline"
+                size="sm"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleReject}
                 disabled={actionLoading}
-                className="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-semibold"
+                variant="primary"
+                size="sm"
               >
                 Submit Request
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>

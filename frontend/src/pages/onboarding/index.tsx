@@ -1,18 +1,47 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Building2, User, Mail, Lock, ShieldCheck, ArrowRight, AlertCircle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Check, AlertCircle } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
+import { Logo, Button, Card } from '../../components/ui/primitives';
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const { loginHR } = useAuth();
+
+  const [step, setStep] = useState(1);
+
+  // Form states
   const [orgName, setOrgName] = useState('Acme Corp');
   const [hrName, setHrName] = useState('Priya Shah');
   const [email, setEmail] = useState('priya@acme.com');
   const [password, setPassword] = useState('password123');
+
+  const [industry, setIndustry] = useState('Technology & Software');
+  const [companySize, setCompanySize] = useState('50-200 employees');
+  const [departments, setDepartments] = useState('Engineering, Design, Product, HR, Sales');
+  const [cycleFrequency, setCycleFrequency] = useState('Quarterly');
+  const [maxRecencyPct, setMaxRecencyPct] = useState('70');
+  const [minSources, setMinSources] = useState('2');
+
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const steps = [
+    { id: 1, label: '01. ORGANIZATION' },
+    { id: 2, label: '02. INDUSTRY & SCALE' },
+    { id: 3, label: '03. DEPARTMENTS' },
+    { id: 4, label: '04. REVIEW CYCLE' },
+    { id: 5, label: '05. BIAS THRESHOLDS' }
+  ];
+
+  const handleNext = () => {
+    if (step < 5) setStep(step + 1);
+  };
+
+  const handlePrev = () => {
+    if (step > 1) setStep(step - 1);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,101 +76,222 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden">
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="w-full max-w-lg z-10">
+    <div className="min-h-screen bg-[#161616] text-white flex flex-col justify-center items-center p-6">
+      <div className="w-full max-w-xl">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 mb-4 shadow-xl">
-            <Building2 className="w-8 h-8" />
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">Create Organization</h1>
-          <p className="text-slate-400 mt-2 text-sm">Set up your company's multi-tenant 360° review workspace</p>
+          <Logo className="justify-center mb-3" />
+          <h1 className="text-3xl font-bold text-white">Organization Setup Wizard</h1>
+          <p className="text-slate-400 text-xs font-mono mt-1">Configure multi-tenant boundary & review policies</p>
         </div>
 
-        <div className="glass-panel p-8 rounded-2xl border border-slate-800 shadow-2xl">
+        {/* Lime Progress Bar Per Step */}
+        <div className="w-full bg-[#2e2e2e] h-1.5 rounded-full overflow-hidden mb-6">
+          <div
+            className="bg-[#d0f347] h-full transition-all duration-300 ease-verity"
+            style={{ width: `${(step / 5) * 100}%` }}
+          />
+        </div>
+
+        {/* Step Label in Mono Font */}
+        <div className="flex justify-between items-center font-mono text-xs text-slate-400 mb-6 px-1">
+          <span className="font-bold text-[#d0f347] step-label-crossfade">{steps[step - 1].label}</span>
+          <span className="step-label-crossfade">STEP {step} OF 5</span>
+        </div>
+
+        <Card className="p-8 shadow-2xl">
           {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <div className="mb-6 p-3.5 rounded-xl bg-[#fb7185]/15 border border-[#fb7185]/30 text-rose-300 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Company / Org Name</label>
-              <div className="relative">
-                <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input
-                  type="text"
-                  value={orgName}
-                  onChange={(e) => setOrgName(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-slate-900/80 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm"
-                  placeholder="Acme Corp"
-                  required
-                />
+          <form onSubmit={handleSubmit}>
+            {/* STEP 1 */}
+            {step === 1 && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-white mb-2">Step 1: Organization & Admin Account</h3>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Organization / Company Name</label>
+                  <input
+                    type="text"
+                    value={orgName}
+                    onChange={(e) => setOrgName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    placeholder="Acme Corp"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">HR Admin Name</label>
+                  <input
+                    type="text"
+                    value={hrName}
+                    onChange={(e) => setHrName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    placeholder="Priya Shah"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Work Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    placeholder="priya@acme.com"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">HR Admin Name</label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input
-                  type="text"
-                  value={hrName}
-                  onChange={(e) => setHrName(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-slate-900/80 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm"
-                  placeholder="Priya Shah"
-                  required
-                />
+            {/* STEP 2 */}
+            {step === 2 && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-white mb-2">Step 2: Industry Sector & Scale</h3>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Industry Sector</label>
+                  <select
+                    value={industry}
+                    onChange={(e) => setIndustry(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                  >
+                    <option value="Technology & Software">Technology & Software</option>
+                    <option value="Finance & Banking">Finance & Banking</option>
+                    <option value="Healthcare & Biotech">Healthcare & Biotech</option>
+                    <option value="Services & Consulting">Services & Consulting</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Company Size</label>
+                  <select
+                    value={companySize}
+                    onChange={(e) => setCompanySize(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                  >
+                    <option value="1-50 employees">1-50 employees</option>
+                    <option value="50-200 employees">50-200 employees</option>
+                    <option value="200-500 employees">200-500 employees</option>
+                    <option value="500+ employees">500+ employees</option>
+                  </select>
+                </div>
               </div>
-            </div>
+            )}
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Work Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-slate-900/80 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm"
-                  placeholder="priya@acme.com"
-                  required
-                />
+            {/* STEP 3 */}
+            {step === 3 && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-white mb-2">Step 3: Organizational Departments</h3>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Departments (Comma-separated)</label>
+                  <textarea
+                    value={departments}
+                    onChange={(e) => setDepartments(e.target.value)}
+                    className="w-full p-3.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347] h-28"
+                    placeholder="Engineering, Product, Design, HR, Sales"
+                  />
+                  <p className="text-[11px] font-mono text-slate-500 mt-1">Used to categorize employee roster & department level review reports.</p>
+                </div>
               </div>
-            </div>
+            )}
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-slate-900/80 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm"
-                  placeholder="••••••••"
-                  required
-                />
+            {/* STEP 4 */}
+            {step === 4 && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-white mb-2">Step 4: Review Cycle Cadence</h3>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Cycle Frequency</label>
+                  <select
+                    value={cycleFrequency}
+                    onChange={(e) => setCycleFrequency(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                  >
+                    <option value="Quarterly">Quarterly (Recommended)</option>
+                    <option value="Semi-Annual">Semi-Annual</option>
+                    <option value="Annual">Annual</option>
+                  </select>
+                </div>
               </div>
-            </div>
+            )}
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all disabled:opacity-50 text-sm"
-            >
-              {submitting ? 'Creating Organization...' : 'Complete Setup & Launch Dashboard'}
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            {/* STEP 5 */}
+            {step === 5 && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-white mb-2">Step 5: Bias Sensitivity Thresholds</h3>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Max Recency Threshold (%)</label>
+                  <input
+                    type="number"
+                    value={maxRecencyPct}
+                    onChange={(e) => setMaxRecencyPct(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                  />
+                  <p className="text-[11px] font-mono text-slate-500 mt-1">Flag reviews if more than this percentage of feedback occurs in the last 2 weeks.</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Min Unique Feedback Sources</label>
+                  <input
+                    type="number"
+                    value={minSources}
+                    onChange={(e) => setMinSources(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between pt-6 mt-6 border-t border-[#2e2e2e]">
+              {step > 1 ? (
+                <Button
+                  type="button"
+                  onClick={handlePrev}
+                  variant="outline"
+                  size="sm"
+                  className="gap-1"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" /> Back
+                </Button>
+              ) : <div />}
+
+              {step < 5 ? (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  variant="primary"
+                  size="sm"
+                  className="gap-1"
+                >
+                  Continue <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  variant="primary"
+                  size="md"
+                  className="gap-1"
+                >
+                  {submitting ? 'Creating...' : 'Finish Setup'}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              )}
+            </div>
           </form>
-
-          <div className="mt-6 pt-6 border-t border-slate-800 text-center text-xs text-slate-400">
-            Already registered? <Link to="/login/hr" className="text-indigo-400 font-semibold hover:underline">HR Login</Link>
-          </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
