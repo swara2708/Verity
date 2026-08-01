@@ -299,23 +299,20 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Text */}
           <div className="lg:col-span-6 space-y-6 scroll-popup">
+            <div className="qount-eyebrow font-mono text-xs font-extrabold uppercase tracking-widest text-[#d0f347]">
+              Practice Management
+            </div>
+
             <TextType
-              text={["Continuous Evidence Flywheel", "Deterministic Bias Auditing", "Practice Management Engine"]}
-              typingSpeed={60}
-              pauseDuration={1800}
-              deletingSpeed={30}
+              text={["Bias-Aware Performance Intelligence Built for How Your Firm Actually Works"]}
+              typingSpeed={45}
+              pauseDuration={4000}
+              deletingSpeed={20}
+              loop={false}
               showCursor={true}
               cursorCharacter="|"
-              cursorClassName="text-[#d0f347]"
-              className="qount-eyebrow font-mono text-xs font-extrabold uppercase tracking-widest text-[#d0f347]"
-            />
-
-            <BlurText
-              text="Bias-Aware Performance Intelligence Built for How Your Firm Actually Works"
-              delay={120}
-              animateBy="words"
-              direction="top"
-              stepDuration={0.35}
+              cursorClassName="text-[#d0f347] font-light"
+              as="h1"
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]"
             />
 
