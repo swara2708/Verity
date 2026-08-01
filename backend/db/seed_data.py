@@ -3,9 +3,9 @@ import json
 from datetime import datetime, timedelta
 from sqlmodel import Session, select
 
-from backend.db.session import engine, init_db
-from backend.db.schema import Organization, User, FeedbackEntry, DailyDraft, Evidence, Review, BiasReport
-from backend.auth.utils import hash_password
+from db.session import engine, init_db
+from db.schema import Organization, User, FeedbackEntry, DailyDraft, Evidence, Review, BiasReport
+from auth.utils import hash_password
 
 def seed():
     init_db()

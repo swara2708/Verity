@@ -1,6 +1,6 @@
 import os
 import json
-from backend.reviews.agents.llm_client import call_llm, parse_json_response
+from reviews.agents.llm_client import call_llm, parse_json_response
 
 def synthesize_review(employee_name: str, evidence_data: dict) -> dict:
     """

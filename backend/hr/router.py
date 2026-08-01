@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from backend.db.session import get_session
-from backend.db.schema import Organization, User, Review, Evidence
-from backend.auth.utils import require_hr, CurrentUser
+from db.session import get_session
+from db.schema import Organization, User, Review, Evidence
+from auth.utils import require_hr, CurrentUser
 
 router = APIRouter(prefix="/hr", tags=["hr"])
 

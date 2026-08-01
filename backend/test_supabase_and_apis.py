@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 load_dotenv('backend/.env')
 
 from sqlmodel import Session, select
-from backend.db.session import engine
-from backend.db.schema import Organization, User, Invite, Evidence, Review, FeedbackEntry, DailyDraft
+from db.session import engine
+from db.schema import Organization, User, Invite, Evidence, Review, FeedbackEntry, DailyDraft
 
 print("=== 1. TESTING HOSTED SUPABASE POSTGRESQL DATABASE ===")
 try:
@@ -26,7 +26,7 @@ except Exception as e:
 
 print("\n=== 2. TESTING ALL BACKEND API ENDPOINTS ===")
 from fastapi.testclient import TestClient
-from backend.main import app
+from main import app
 
 client = TestClient(app)
 

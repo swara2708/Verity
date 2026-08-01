@@ -1,8 +1,8 @@
 import os
 import json
 from sqlmodel import Session, select
-from backend.db.schema import FeedbackEntry, DailyDraft, Evidence
-from backend.reviews.agents.llm_client import call_llm, parse_json_response
+from db.schema import FeedbackEntry, DailyDraft, Evidence
+from reviews.agents.llm_client import call_llm, parse_json_response
 
 def gather_evidence(employee_id: str, org_id: str, session: Session):
     """

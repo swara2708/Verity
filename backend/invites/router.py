@@ -5,10 +5,10 @@ from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from backend.db.session import get_session
-from backend.db.schema import Organization, User, Invite
-from backend.auth.utils import require_hr, CurrentUser, hash_password
-from backend.utils.email import send_invite_email
+from db.session import get_session
+from db.schema import Organization, User, Invite
+from auth.utils import require_hr, CurrentUser, hash_password
+from utils.email import send_invite_email
 
 router = APIRouter(prefix="/invites", tags=["invites"])
 

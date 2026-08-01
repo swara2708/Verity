@@ -6,12 +6,12 @@ from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from backend.db.session import get_session
-from backend.db.schema import Review, BiasReport, User
-from backend.auth.utils import get_current_user, require_hr, CurrentUser
-from backend.reviews.agents.evidence_agent import gather_evidence
-from backend.reviews.agents.synthesis_agent import synthesize_review
-from backend.reviews.agents.bias_agent import analyze_bias
+from db.session import get_session
+from db.schema import Review, BiasReport, User
+from auth.utils import get_current_user, require_hr, CurrentUser
+from reviews.agents.evidence_agent import gather_evidence
+from reviews.agents.synthesis_agent import synthesize_review
+from reviews.agents.bias_agent import analyze_bias
 
 router = APIRouter(prefix="/reviews", tags=["reviews"])
 
@@ -50,12 +50,12 @@ def generate_review(
     )
 
     # Match claims using Evidence Retrieval Agent
-    from backend.reviews.agents.evidence_agent import match_claims_to_evidence
+    from reviews.agents.evidence_agent import match_claims_to_evidence
     claim_evidence = match_claims_to_evidence(claims_to_match, evidence_data)
     report["claim_evidence"] = claim_evidence
 
     # Fetch Organization to check for custom bias_thresholds_json
-    from backend.db.schema import Organization
+    from db.schema import Organization
     org = session.get(Organization, current_user.org_id)
     bias_thresholds = json.loads(org.bias_thresholds_json) if org and org.bias_thresholds_json else None
 
@@ -176,7 +176,7 @@ def get_review(
         "bias_report": bias_dict
     }
 
-from backend.utils.email import send_review_status_email
+from utils.email import send_review_status_email
 
 @router.post("/{id}/approve")
 def approve_review(

@@ -3,8 +3,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from fastapi.testclient import TestClient
-from backend.main import app
+from main import app
+from db.session import init_db
 
+init_db()
 client = TestClient(app)
 
 def test_health():
