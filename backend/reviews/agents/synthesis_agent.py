@@ -1,25 +1,24 @@
 import os
 import json
+from backend.reviews.agents.llm_client import call_llm, parse_json_response
 
 def synthesize_review(employee_name: str, evidence_data: dict) -> dict:
     """
-    Synthesizes performance evidence into structured review report.
-    Calls Anthropic Claude API if ANTHROPIC_API_KEY is present,
-    otherwise uses clean fallback extraction logic.
+    Synthesizes 360° performance evidence into an easy-to-read, structured HR draft report.
+    Calls Google Gemini API (gemini-2.0-flash) via call_llm if GEMINI_API_KEY is set,
+    otherwise uses high-quality fallback extraction logic.
     """
     feedback = evidence_data.get("feedback", [])
     daily_drafts = evidence_data.get("daily_drafts", [])
     evidence = evidence_data.get("evidence", [])
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY")
     
     if api_key:
         try:
-            import anthropic
-            client = anthropic.Anthropic(api_key=api_key)
-
-            prompt = f"""You are an executive performance review intelligence agent.
+            prompt = f"""You are an executive HR performance review intelligence agent.
 Synthesize the following 360° feedback and daily draft logs for employee: {employee_name}.
+Make the draft report clear, highly structured, and easy for an HR Manager to review instantly.
 
 Feedback Entries:
 {json.dumps(feedback, indent=2)}
@@ -30,30 +29,30 @@ Daily Draft Logs:
 Additional Evidence:
 {json.dumps(evidence, indent=2)}
 
-Return ONLY a raw JSON object with key structures:
+Return ONLY valid JSON, no extra text, no markdown code fences.
+Target JSON structure:
 {{
-  "strengths": ["list of key strengths supported by evidence"],
-  "growth_areas": ["list of actionable areas for improvement"],
-  "impact_highlights": ["key quantifiable accomplishments"],
+  "hr_summary": "Clear 2-3 sentence executive summary for HR highlighting overall performance tier, key milestone delivered, and main takeaway.",
+  "strengths": ["list of key strengths supported by empirical evidence"],
+  "growth_areas": ["list of actionable, constructive areas for improvement"],
+  "impact_highlights": ["key quantifiable accomplishments and deliverables"],
   "goal_progress": [
     {{"goal": "Goal name", "status": "on_track | completed | needs_attention"}}
   ]
 }}
 """
-            response = client.messages.create(
-                model="claude-3-5-sonnet-20241022",
-                max_tokens=1000,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            text = response.content[0].text
-            clean_json = text[text.find("{"):text.rfind("}")+1]
-            return json.loads(clean_json)
+            raw_response = call_llm(prompt)
+            result = parse_json_response(raw_response)
+            if isinstance(result, dict):
+                return result
         except Exception as e:
-            print(f"[Synthesis Agent] Claude API call failed or key invalid, using fallback synthesis: {e}")
+            print(f"[Synthesis Agent] Gemini API call failed or key invalid, using fallback synthesis: {e}")
 
     # High-quality fallback synthesis based on evidence data
     feedback_text = [f["content"] for f in feedback]
     draft_text = [d["content"] for d in daily_drafts]
+
+    hr_summary = f"{employee_name} has demonstrated steady technical ownership and consistent delivery across recent sprint cycles, backed by active daily progress logs and cross-functional feedback."
 
     strengths = []
     growth_areas = []
@@ -80,6 +79,7 @@ Return ONLY a raw JSON object with key structures:
     ]
 
     return {
+        "hr_summary": hr_summary,
         "strengths": strengths,
         "growth_areas": growth_areas,
         "impact_highlights": impact_highlights,

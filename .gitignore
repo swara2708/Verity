@@ -1,0 +1,13 @@
+# Database & Local Files
+*.db
+*.sqlite3
+verity.db
+.env
+backend/.env
+
+# Node & Python
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.DS_Store
