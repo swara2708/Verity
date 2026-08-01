@@ -1,0 +1,1 @@
+# Daily drafts package initialization
