@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import LogoLoop, { LogoItem } from '../../components/ui/LogoLoop';
 import CardSwap, { Card } from '../../components/ui/CardSwap';
+import BorderGlow from '../../components/ui/BorderGlow';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -640,19 +641,29 @@ export default function LandingPage() {
               ))}
             </div>
 
-            <div className="bg-[#222222] border border-[#2e2e2e] p-5 rounded-2xl space-y-3">
-              <div className="flex items-center gap-2 text-[#d0f347] font-extrabold text-xs uppercase tracking-wider">
-                <Sparkles className="w-4 h-4 text-[#d0f347]" /> VERITY AI ANALYSIS
+            <BorderGlow
+              animated={true}
+              glowColor="72 85 62"
+              backgroundColor="#222222"
+              borderRadius={16}
+              glowRadius={30}
+              glowIntensity={1.2}
+              colors={['#d0f347', '#beeb30', '#10b981']}
+            >
+              <div className="p-5 space-y-3">
+                <div className="flex items-center gap-2 text-[#d0f347] font-extrabold text-xs uppercase tracking-wider">
+                  <Sparkles className="w-4 h-4 text-[#d0f347]" /> VERITY AI ANALYSIS
+                </div>
+                <div className="space-y-2 text-xs text-slate-300">
+                  {currentPreview.aiBullets.map((b, idx) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <span className="text-[#d0f347] font-bold">◇</span>
+                      <span>{b}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-2 text-xs text-slate-300">
-                {currentPreview.aiBullets.map((b, idx) => (
-                  <div key={idx} className="flex items-start gap-2">
-                    <span className="text-[#d0f347] font-bold">◇</span>
-                    <span>{b}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            </BorderGlow>
           </div>
         </div>
       </section>
