@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Production builds
+dist/
+frontend/dist/
+
+# Environment files & secret credentials
+.env
+.env.local
+*.env
+
+# Python & SQLite
+__pycache__/
+*.pyc
+*.sqlite3
+*.db
+.pytest_cache/
+
+# OS metadata
+.DS_Store
+Thumbs.db

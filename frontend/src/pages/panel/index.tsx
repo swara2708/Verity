@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { UserCheck, PlusCircle, Calendar, MessageSquare, Clock, LogOut, FileText, Send, Link as LinkIcon, Award } from 'lucide-react';
+import { PlusCircle, Calendar, MessageSquare, LogOut, Award, Send, Link as LinkIcon } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
+import { Logo, Button, Card } from '../../components/ui/primitives';
 
 interface DraftItem {
   id: string;
@@ -34,13 +35,8 @@ export default function EmployeePanelPage() {
   const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // New feedback submission form
-  const [targetEmployeeId, setTargetEmployeeId] = useState<string>('');
-  const [sourceType, setSourceType] = useState<string>('peer');
-  const [feedbackContent, setFeedbackContent] = useState<string>('');
-  const [submittingFeedback, setSubmittingFeedback] = useState<boolean>(false);
-
-  // New formal evidence submission form
+  // Evidence Modal state
+  const [showEvidenceModal, setShowEvidenceModal] = useState<boolean>(false);
   const [evidenceDescription, setEvidenceDescription] = useState<string>('');
   const [evidenceLinkUrl, setEvidenceLinkUrl] = useState<string>('');
   const [evidenceType, setEvidenceType] = useState<string>('project_outcome');
@@ -68,30 +64,6 @@ export default function EmployeePanelPage() {
     fetchPanelData();
   }, [user]);
 
-  const handleSubmitFeedback = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    setSubmittingFeedback(true);
-    try {
-      const targetId = targetEmployeeId.trim() || user.id;
-      await apiFetch('/feedback', {
-        method: 'POST',
-        body: JSON.stringify({
-          employee_id: targetId,
-          source_type: sourceType,
-          content: feedbackContent,
-        }),
-      });
-      setFeedbackContent('');
-      alert('Feedback submitted successfully!');
-      fetchPanelData();
-    } catch (err: any) {
-      alert(err.message || 'Failed to submit feedback');
-    } finally {
-      setSubmittingFeedback(false);
-    }
-  };
-
   const handleSubmitEvidence = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -108,6 +80,7 @@ export default function EmployeePanelPage() {
       });
       setEvidenceDescription('');
       setEvidenceLinkUrl('');
+      setShowEvidenceModal(false);
       alert('Formal evidence recorded successfully!');
       fetchPanelData();
     } catch (err: any) {
@@ -119,32 +92,29 @@ export default function EmployeePanelPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
+      <div className="min-h-screen bg-[#161616] flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d0f347]" />
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 pb-16">
-      {/* Top Navbar */}
-      <nav className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold">
-              <UserCheck className="w-6 h-6" />
-            </div>
-            <div>
-              <span className="font-extrabold text-lg text-white">Verity Portal</span>
-              <span className="ml-2 text-xs px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium capitalize">
-                {user?.name} ({user?.role})
-              </span>
-            </div>
-          </div>
+  const selfFeedback = feedback.filter((f) => f.source_type === 'self');
+  const peerFeedback = feedback.filter((f) => f.source_type === 'peer');
+  const managerFeedback = feedback.filter((f) => f.source_type === 'manager');
 
-          <div className="flex items-center gap-3 text-sm">
-            <Link to="/panel/daily" className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold flex items-center gap-2 transition-all text-xs shadow-lg shadow-blue-600/20">
-              <PlusCircle className="w-4 h-4" /> Daily Check-in
+  return (
+    <div className="min-h-screen bg-[#161616] text-white pb-16">
+      {/* Navbar */}
+      <nav className="border-b border-[#2e2e2e] bg-[#161616]/90 backdrop-blur-md sticky top-0 z-30">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Logo />
+
+          <div className="flex items-center gap-4 text-xs font-mono">
+            <span className="text-slate-400 font-bold hidden sm:inline">{user?.name} ({user?.role})</span>
+            <Link to="/panel/daily">
+              <Button variant="primary" size="sm" className="gap-1.5">
+                <PlusCircle className="w-3.5 h-3.5" /> Daily Check-in
+              </Button>
             </Link>
 
             <button
@@ -152,246 +122,235 @@ export default function EmployeePanelPage() {
                 logout();
                 navigate('/login');
               }}
-              className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-all"
+              className="p-1.5 text-slate-400 hover:text-[#fb7185] transition-colors"
               title="Logout"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
         </div>
       </nav>
 
       {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-6 pt-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-extrabold text-white">My Evidence & Feedback Portal</h1>
-            <p className="text-slate-400 text-sm mt-1">Continuous evidence accumulation prevents end-of-quarter recency bias</p>
-          </div>
+      <main className="max-w-6xl mx-auto px-6 pt-10">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white">Employee Evidence & Feedback Portal</h1>
+          <p className="text-slate-400 text-xs font-mono mt-1">Accumulate continuous evidence logs to eliminate end-of-cycle memory bias.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left 2 Columns: Formal Evidence, Daily Drafts Timeline & Feedback History */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Formal Evidence Section */}
-            <div className="glass-panel p-6 rounded-2xl border border-indigo-500/30">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Award className="w-5 h-5 text-indigo-400" />
-                  Recorded Formal Evidence
-                </h2>
-                <span className="text-xs text-slate-400">Attached to performance reviews</span>
-              </div>
-
-              {evidenceList.length === 0 ? (
-                <div className="text-center py-6 text-slate-400 text-xs">
-                  No formal evidence items recorded yet. Use the "Add Evidence" form on the right!
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {evidenceList.map((e) => (
-                    <div key={e.id} className="p-4 bg-slate-900/80 rounded-xl border border-slate-800 flex items-start justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 capitalize">
-                            {e.evidence_type.replace('_', ' ')}
-                          </span>
-                          <span className="text-xs text-slate-500 font-mono">{e.date}</span>
-                        </div>
-                        <p className="text-sm text-slate-100 font-medium">{e.description}</p>
-                        {e.link_url && (
-                          <a
-                            href={e.link_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:underline mt-2"
-                          >
-                            <LinkIcon className="w-3.5 h-3.5" /> {e.link_url}
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+        {/* Two-Column Grid: Daily Draft Log & 360 Feedback Received */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Daily Draft Log Card */}
+          <Card className="shadow-2xl space-y-4">
+            <div className="font-mono text-xs font-bold text-[#d0f347] uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-[#d0f347]" />
+                DAILY DRAFT LOG (CHRONOLOGICAL)
+              </span>
+              <Link to="/panel/daily" className="text-[11px] text-[#d0f347] hover:underline font-mono">
+                + New Log
+              </Link>
             </div>
 
-            {/* Daily Drafts Timeline */}
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-blue-400" />
-                  Daily Draft Logs Timeline
-                </h2>
-                <Link to="/panel/daily" className="text-xs text-blue-400 hover:underline flex items-center gap-1">
-                  + Add Entry
-                </Link>
+            {drafts.length === 0 ? (
+              <p className="text-xs text-slate-500 italic py-4 text-center font-mono">No daily draft entries logged yet.</p>
+            ) : (
+              <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+                {drafts.map((d) => (
+                  <div key={d.id} className="p-3.5 bg-[#181818] rounded-xl border border-[#2e2e2e] text-xs space-y-1">
+                    <div className="font-mono text-[11px] font-bold text-[#d0f347]">{d.entry_date}</div>
+                    <p className="text-slate-200 leading-relaxed">{d.content}</p>
+                  </div>
+                ))}
               </div>
+            )}
+          </Card>
 
-              {drafts.length === 0 ? (
-                <div className="text-center py-8 text-slate-400 text-xs">
-                  No daily drafts logged yet. Log daily updates to build your evidence timeline!
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {drafts.map((d) => (
-                    <div key={d.id} className="p-4 bg-slate-900/60 rounded-xl border border-slate-800/80 flex items-start gap-4">
-                      <div className="px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-300 font-mono text-xs font-semibold flex-shrink-0">
-                        {d.entry_date}
-                      </div>
-                      <p className="text-sm text-slate-200">{d.content}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
+          {/* 360 Feedback Received Card */}
+          <Card className="shadow-2xl space-y-4">
+            <div className="font-mono text-xs font-bold text-white uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-[#d0f347]" />
+              360° FEEDBACK RECEIVED (GROUPED BY SOURCE)
             </div>
 
-            {/* Feedback History */}
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-indigo-400" />
-                  Recorded 360° Feedback
-                </h2>
+            <div className="space-y-4 max-h-80 overflow-y-auto pr-1">
+              {/* Manager */}
+              <div>
+                <span className="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 uppercase">
+                  Manager Feedback ({managerFeedback.length})
+                </span>
+                {managerFeedback.length === 0 ? (
+                  <p className="text-[11px] text-slate-500 italic mt-1 font-mono">No manager feedback recorded.</p>
+                ) : (
+                  <div className="space-y-2 mt-2">
+                    {managerFeedback.map((f) => (
+                      <div key={f.id} className="p-3 bg-[#181818] rounded-xl border border-[#2e2e2e] text-xs text-slate-200">
+                        <p>{f.content}</p>
+                        <span className="font-mono text-[10px] text-slate-500 mt-1 block">{new Date(f.created_at).toLocaleDateString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {feedback.length === 0 ? (
-                <div className="text-center py-8 text-slate-400 text-xs">
-                  No feedback entries recorded yet for your account.
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {feedback.map((f) => (
-                    <div key={f.id} className="p-4 bg-slate-900/60 rounded-xl border border-slate-800/80">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 capitalize">
-                          {f.source_type} Feedback
-                        </span>
-                        <span className="text-xs text-slate-500">{new Date(f.created_at).toLocaleDateString()}</span>
+              {/* Peer */}
+              <div>
+                <span className="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 uppercase">
+                  Peer Feedback ({peerFeedback.length})
+                </span>
+                {peerFeedback.length === 0 ? (
+                  <p className="text-[11px] text-slate-500 italic mt-1 font-mono">No peer feedback recorded.</p>
+                ) : (
+                  <div className="space-y-2 mt-2">
+                    {peerFeedback.map((f) => (
+                      <div key={f.id} className="p-3 bg-[#181818] rounded-xl border border-[#2e2e2e] text-xs text-slate-200">
+                        <p>{f.content}</p>
+                        <span className="font-mono text-[10px] text-slate-500 mt-1 block">{new Date(f.created_at).toLocaleDateString()}</span>
                       </div>
-                      <p className="text-sm text-slate-200">{f.content}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Self */}
+              <div>
+                <span className="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 uppercase">
+                  Self Assessment ({selfFeedback.length})
+                </span>
+                {selfFeedback.length === 0 ? (
+                  <p className="text-[11px] text-slate-500 italic mt-1 font-mono">No self assessments recorded.</p>
+                ) : (
+                  <div className="space-y-2 mt-2">
+                    {selfFeedback.map((f) => (
+                      <div key={f.id} className="p-3 bg-[#181818] rounded-xl border border-[#2e2e2e] text-xs text-slate-200">
+                        <p>{f.content}</p>
+                        <span className="font-mono text-[10px] text-slate-500 mt-1 block">{new Date(f.created_at).toLocaleDateString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
+          </Card>
+        </div>
+
+        {/* Full-Width Formal Evidence Card */}
+        <Card className="shadow-2xl space-y-4 mb-8">
+          <div className="font-mono text-xs font-bold text-white uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Award className="w-4 h-4 text-[#d0f347]" />
+              FORMAL EVIDENCE ARTIFACTS
+            </span>
+            <Button
+              onClick={() => setShowEvidenceModal(true)}
+              variant="primary"
+              size="sm"
+            >
+              + Add Evidence
+            </Button>
           </div>
 
-          {/* Right Column: Add Evidence Form & Submit Feedback Form */}
-          <div className="space-y-6">
-            {/* Add Evidence Form */}
-            <div className="glass-panel p-6 rounded-2xl border border-indigo-500/30">
-              <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2">
-                <Award className="w-4 h-4 text-indigo-400" />
-                Add Formal Evidence
-              </h3>
-              <p className="text-xs text-slate-400 mb-4">Record tangible outcomes, metric improvements, or PR links.</p>
-
-              <form onSubmit={handleSubmitEvidence} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">What Happened (Description)</label>
-                  <textarea
-                    value={evidenceDescription}
-                    onChange={(e) => setEvidenceDescription(e.target.value)}
-                    placeholder="e.g. Delivered invite token authentication refactor ahead of sprint deadline..."
-                    className="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500 h-24"
-                    required
-                  />
+          {evidenceList.length === 0 ? (
+            <p className="text-xs text-slate-500 font-mono py-6 text-center">
+              No formal evidence items recorded yet. Use the "+ Add Evidence" button above.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {evidenceList.map((e) => (
+                <div key={e.id} className="p-4 bg-[#181818] rounded-xl border border-[#2e2e2e] flex items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2.5 py-0.5 rounded-full font-mono text-[11px] font-bold bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 uppercase">
+                        {e.evidence_type.replace('_', ' ')}
+                      </span>
+                      <span className="font-mono text-[11px] text-slate-500">{e.date}</span>
+                    </div>
+                    <p className="text-xs text-white font-medium">{e.description}</p>
+                    {e.link_url && (
+                      <a
+                        href={e.link_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 font-mono text-[11px] text-[#d0f347] hover:underline mt-1.5"
+                      >
+                        <LinkIcon className="w-3 h-3" /> {e.link_url}
+                      </a>
+                    )}
+                  </div>
                 </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      </main>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Evidence Type</label>
-                  <select
-                    value={evidenceType}
-                    onChange={(e) => setEvidenceType(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
-                  >
-                    <option value="project_outcome">Project Outcome</option>
-                    <option value="metric">Metric Improvement</option>
-                    <option value="link">Pull Request / Link</option>
-                    <option value="goal_progress">Goal Update</option>
-                    <option value="general">General</option>
-                  </select>
-                </div>
+      {/* Add Evidence Modal */}
+      {showEvidenceModal && (
+        <div className="fixed inset-0 bg-[#141414]/80 backdrop-blur-md flex justify-center items-center p-4 z-50 animate-backdrop-enter">
+          <Card className="max-w-md w-full p-6 shadow-2xl space-y-4 animate-modal-card-enter">
+            <h3 className="text-xl font-bold text-white">Add Formal Evidence Artifact</h3>
+            <p className="text-xs text-slate-400">Attach tangible outcomes, PR links, or metric updates.</p>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Optional Link URL</label>
-                  <input
-                    type="url"
-                    value={evidenceLinkUrl}
-                    onChange={(e) => setEvidenceLinkUrl(e.target.value)}
-                    placeholder="https://github.com/org/repo/pull/42"
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
+            <form onSubmit={handleSubmitEvidence} className="space-y-4">
+              <div>
+                <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Description</label>
+                <textarea
+                  value={evidenceDescription}
+                  onChange={(e) => setEvidenceDescription(e.target.value)}
+                  placeholder="e.g. Delivered invite token auth refactor ahead of schedule..."
+                  className="w-full p-3.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347] h-20"
+                  required
+                />
+              </div>
 
-                <button
+              <div>
+                <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Evidence Type</label>
+                <select
+                  value={evidenceType}
+                  onChange={(e) => setEvidenceType(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                >
+                  <option value="project_outcome">Project Outcome</option>
+                  <option value="metric">Metric Improvement</option>
+                  <option value="link">Pull Request / Link</option>
+                  <option value="goal_progress">Goal Update</option>
+                  <option value="general">General</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Optional Link URL</label>
+                <input
+                  type="url"
+                  value={evidenceLinkUrl}
+                  onChange={(e) => setEvidenceLinkUrl(e.target.value)}
+                  placeholder="https://github.com/org/repo/pull/42"
+                  className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#2e2e2e]">
+                <Button
+                  type="button"
+                  onClick={() => setShowEvidenceModal(false)}
+                  variant="outline"
+                  size="sm"
+                >
+                  Cancel
+                </Button>
+                <Button
                   type="submit"
                   disabled={submittingEvidence}
-                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50"
+                  variant="primary"
+                  size="sm"
                 >
-                  {submittingEvidence ? 'Saving...' : 'Add Evidence Item'}
-                </button>
-              </form>
-            </div>
-
-            {/* Submit 360 Feedback Form */}
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-              <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2">
-                <Send className="w-4 h-4 text-blue-400" />
-                Submit 360° Feedback
-              </h3>
-              <p className="text-xs text-slate-400 mb-4">Provide feedback for self, peers, or team members.</p>
-
-              <form onSubmit={handleSubmitFeedback} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Target Employee ID</label>
-                  <input
-                    type="text"
-                    value={targetEmployeeId}
-                    onChange={(e) => setTargetEmployeeId(e.target.value)}
-                    placeholder={user?.id || 'usr_4'}
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500"
-                  />
-                  <span className="text-[10px] text-slate-500 mt-1 block">Leave empty to target your own account ({user?.id})</span>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Source Type</label>
-                  <select
-                    value={sourceType}
-                    onChange={(e) => setSourceType(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="peer">Peer</option>
-                    <option value="self">Self</option>
-                    <option value="manager">Manager</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Feedback Content</label>
-                  <textarea
-                    value={feedbackContent}
-                    onChange={(e) => setFeedbackContent(e.target.value)}
-                    placeholder="Provide specific feedback on deliverables, mentorship, or collaboration..."
-                    className="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500 h-28"
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={submittingFeedback}
-                  className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-xs shadow-lg shadow-blue-600/30 transition-all disabled:opacity-50"
-                >
-                  {submittingFeedback ? 'Submitting...' : 'Submit Feedback'}
-                </button>
-              </form>
-            </div>
-          </div>
+                  Save Evidence Item
+                </Button>
+              </div>
+            </form>
+          </Card>
         </div>
-      </main>
+      )}
     </div>
   );
 }

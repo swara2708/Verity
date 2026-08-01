@@ -8,6 +8,7 @@ from sqlmodel import Session, select
 from backend.db.session import get_session
 from backend.db.schema import Organization, User, Invite
 from backend.auth.utils import require_hr, CurrentUser, hash_password
+from backend.utils.email import send_invite_email
 
 router = APIRouter(prefix="/invites", tags=["invites"])
 
@@ -44,10 +45,22 @@ def create_invite(
     session.add(invite)
     session.commit()
 
+    invite_url = f"/join/{token}"
+
+    # Fetch org name for transactional invite email
+    org = session.get(Organization, current_user.org_id)
+    org_name = org.name if org else "Organization"
+
+    # Send invite email via Resend (wrapped in try/except so failure never blocks response)
+    try:
+        send_invite_email(to_email=req.email, invite_url=invite_url, org_name=org_name)
+    except Exception as e:
+        print(f"[Email Error] Failed to send invite email to {req.email}: {e}")
+
     return {
         "invite_id": invite.id,
         "token": token,
-        "invite_url": f"/join/{token}",
+        "invite_url": invite_url,
         "expires_at": expires_at.isoformat() + "Z"
     }
 

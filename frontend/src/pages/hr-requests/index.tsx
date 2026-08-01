@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, Clock, Check, X, ArrowLeft, User, Mail, Building2, AlertCircle } from 'lucide-react';
+import { Clock, Check, X, ArrowLeft, Mail, Building2 } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
+import { Logo, Button, Card } from '../../components/ui/primitives';
 
 interface RequestItem {
   user_id: string;
@@ -59,85 +60,91 @@ export default function HRRequestsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" />
+      <div className="min-h-screen bg-[#161616] flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d0f347]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 pb-16">
+    <div className="min-h-screen bg-[#161616] text-white pb-16">
       {/* Navbar */}
-      <nav className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
+      <nav className="border-b border-[#2e2e2e] bg-[#161616]/90 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/hr/dashboard" className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
-              <ArrowLeft className="w-5 h-5" />
+            <Link to="/hr/dashboard" className="p-2 rounded-xl bg-[#181818] border border-[#2e2e2e] text-slate-300 hover:text-white transition-colors">
+              <ArrowLeft className="w-4 h-4" />
             </Link>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-indigo-400" />
-              <span className="font-extrabold text-lg text-white">Pending Join Requests</span>
-            </div>
+            <Logo />
           </div>
+          <span className="font-mono text-xs font-bold text-[#d0f347] uppercase tracking-wider">
+            Approval Queue
+          </span>
         </div>
       </nav>
 
-      {/* Container */}
-      <main className="max-w-6xl mx-auto px-6 pt-8">
+      {/* Main Container */}
+      <main className="max-w-6xl mx-auto px-6 pt-10">
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-white">Registration Approval Queue</h1>
-          <p className="text-slate-400 text-sm mt-1">Users registered via signed invite link require HR verification before system access is granted.</p>
+          <h1 className="text-3xl font-bold text-white">Pending Join Requests</h1>
+          <p className="text-slate-400 text-xs font-mono mt-1">Users registered via signed invite tokens require explicit HR verification before access is granted.</p>
         </div>
 
         {requests.length === 0 ? (
-          <div className="glass-panel p-12 rounded-2xl border border-slate-800 text-center">
-            <Clock className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-            <h3 className="text-lg font-bold text-white mb-1">No Pending Requests</h3>
-            <p className="text-slate-400 text-xs mb-6">All invite registrations for your organization have been reviewed.</p>
-            <Link to="/hr/dashboard" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold">
-              Return to Dashboard
+          <Card className="p-12 text-center shadow-2xl">
+            <Clock className="w-10 h-10 text-slate-500 mx-auto mb-3" />
+            <h3 className="text-xl font-bold text-white mb-1">Queue Clear</h3>
+            <p className="text-slate-400 text-xs mb-6">All invite registration requests for your organization have been reviewed.</p>
+            <Link to="/hr/dashboard">
+              <Button variant="primary" size="md">Return to Dashboard</Button>
             </Link>
-          </div>
+          </Card>
         ) : (
           <div className="space-y-4">
             {requests.map((req) => (
-              <div key={req.user_id} className="glass-panel p-6 rounded-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-slate-700 transition-all">
+              <Card key={req.user_id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 shadow-2xl">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-[#d0f347]/15 text-[#d0f347] font-mono font-bold flex items-center justify-center text-sm border border-[#d0f347]/30 flex-shrink-0">
                     {req.name.charAt(0)}
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
                       {req.name}
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 capitalize">
+                      <span className="px-2.5 py-0.5 rounded-full font-mono text-[11px] font-bold bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 uppercase">
                         {req.role}
                       </span>
+                      <span className="px-2.5 py-0.5 rounded-full font-mono text-[11px] font-bold bg-[#181818] text-slate-300 border border-[#2e2e2e]">
+                        {req.department}
+                      </span>
                     </h3>
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-2">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400 mt-1">
                       <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5 text-slate-500" /> {req.email}</span>
-                      <span className="flex items-center gap-1"><Building2 className="w-3.5 h-3.5 text-slate-500" /> {req.department}</span>
-                      <span className="text-slate-500">Requested: {new Date(req.requested_at).toLocaleDateString()}</span>
+                      <span>Requested: {new Date(req.requested_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 self-end md:self-center">
-                  <button
+                  <Button
                     onClick={() => handleReject(req.user_id)}
                     disabled={actionUserId === req.user_id}
-                    className="px-4 py-2.5 bg-slate-900 hover:bg-red-500/20 text-slate-300 hover:text-red-300 border border-slate-800 hover:border-red-500/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all"
+                    variant="danger"
+                    size="sm"
+                    className="gap-1"
                   >
-                    <X className="w-4 h-4" /> Reject
-                  </button>
-                  <button
+                    <X className="w-3.5 h-3.5" /> Reject
+                  </Button>
+                  <Button
                     onClick={() => handleApprove(req.user_id)}
                     disabled={actionUserId === req.user_id}
-                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-600/20 flex items-center gap-1.5 transition-all"
+                    variant="primary"
+                    size="sm"
+                    className="gap-1"
                   >
-                    <Check className="w-4 h-4" /> Approve User
-                  </button>
+                    <Check className="w-3.5 h-3.5" /> Approve
+                  </Button>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         )}
