@@ -8,8 +8,8 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlmodel import Session, select
 
-from backend.db.session import get_session
-from backend.db.schema import User
+from db.session import get_session
+from db.schema import User
 
 SECRET_KEY = os.environ.get("JWT_SECRET", "verity-secret-key-360-review-intelligence-2026")
 ALGORITHM = "HS256"

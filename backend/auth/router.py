@@ -4,9 +4,9 @@ from pydantic import BaseModel, EmailStr
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from backend.db.session import get_session
-from backend.db.schema import Organization, User
-from backend.auth.utils import (
+from db.session import get_session
+from db.schema import Organization, User
+from auth.utils import (
     hash_password,
     verify_password,
     create_access_token,

@@ -4,9 +4,9 @@ from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from backend.db.session import get_session
-from backend.db.schema import DailyDraft
-from backend.auth.utils import get_current_user, CurrentUser
+from db.session import get_session
+from db.schema import DailyDraft
+from auth.utils import get_current_user, CurrentUser
 
 router = APIRouter(prefix="/daily-drafts", tags=["daily_drafts"])
 

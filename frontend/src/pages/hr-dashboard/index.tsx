@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, UserPlus, Users, Clock, AlertTriangle, FileText, CheckCircle, ExternalLink, LogOut, Copy, Check } from 'lucide-react';
+import { UserPlus, Users, Clock, AlertTriangle, FileText, ExternalLink, LogOut, Copy, Check, Filter } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
+import { Logo, Button, Card, StatusBadge } from '../../components/ui/primitives';
 
 interface EmployeeItem {
   id: string;
@@ -24,6 +25,7 @@ export default function HRDashboardPage() {
   const [overview, setOverview] = useState<HROverview | null>(null);
   const [pendingCount, setPendingCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
 
   // Invite Modal state
   const [showInviteModal, setShowInviteModal] = useState<boolean>(false);
@@ -83,166 +85,181 @@ export default function HRDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" />
+      <div className="min-h-screen bg-[#161616] flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d0f347]" />
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 pb-16">
-      {/* Top Navbar */}
-      <nav className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <div>
-              <span className="font-extrabold text-lg text-white">Verity HR</span>
-              <span className="ml-2 text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-medium">
-                {overview?.org_name || 'Acme Corp'}
-              </span>
-            </div>
-          </div>
+  const employees = overview?.employees || [];
+  const activeCount = employees.filter((e) => e.status === 'active').length;
+  const inProgressCount = employees.filter((e) => e.review_status === 'draft' || e.review_status === 'drafting').length;
+  const flaggedCount = employees.filter((e) => e.review_status === 'flagged' || e.review_status === 'needs_input').length;
 
-          <div className="flex items-center gap-4 text-sm">
-            <Link to="/hr/requests" className="relative px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center gap-2 transition-all">
-              <Clock className="w-4 h-4 text-amber-400" />
+  const filteredEmployees = departmentFilter === 'all'
+    ? employees
+    : employees.filter((e) => e.department.toLowerCase() === departmentFilter.toLowerCase());
+
+  return (
+    <div className="min-h-screen bg-[#161616] text-white pb-16">
+      {/* Top Nav */}
+      <nav className="border-b border-[#2e2e2e] bg-[#161616]/90 backdrop-blur-md sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Logo />
+
+          <div className="flex items-center gap-4 text-xs font-mono">
+            <Link to="/hr/requests" className="relative px-3.5 py-2 rounded-xl bg-[#222222] hover:bg-[#2e2e2e] border border-[#2e2e2e] text-white flex items-center gap-2 transition-all">
+              <Clock className="w-3.5 h-3.5 text-[#fbbf24]" />
               <span>Pending Requests</span>
               {pendingCount > 0 && (
-                <span className="ml-1 px-2 py-0.5 text-xs bg-amber-500 text-slate-950 font-bold rounded-full">
+                <span className="px-2 py-0.5 text-[10px] bg-[#fbbf24] text-[#141414] font-bold rounded-full">
                   {pendingCount}
                 </span>
               )}
             </Link>
 
-            <button
-              onClick={() => {
-                logout();
-                navigate('/login/hr');
-              }}
-              className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-all"
-              title="Logout"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2 pl-3 border-l border-[#2e2e2e]">
+              <div className="w-8 h-8 rounded-full bg-[#d0f347] text-[#141414] font-bold font-mono flex items-center justify-center text-xs">
+                {user?.name?.charAt(0) || 'H'}
+              </div>
+              <span className="hidden sm:inline font-bold text-white text-xs">{user?.name}</span>
+              <button
+                onClick={() => {
+                  logout();
+                  navigate('/login/hr');
+                }}
+                className="p-1.5 text-slate-400 hover:text-[#fb7185] transition-colors"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-6 pt-8">
-        {/* Hero Section Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+      <main className="max-w-7xl mx-auto px-6 pt-10">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white">360° Review Dashboard</h1>
-            <p className="text-slate-400 text-sm mt-1">Multi-tenant bias detection & evidence-driven review pipeline</p>
+            <span className="font-mono text-xs font-bold text-[#d0f347] uppercase tracking-wider">
+              {overview?.org_name || 'Acme Corp'} &bull; HR Admin Panel
+            </span>
+            <h1 className="text-3xl font-extrabold text-white mt-1">360° Performance Roster</h1>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                setCreatedInviteUrl(null);
-                setInviteEmail('');
-                setShowInviteModal(true);
-              }}
-              className="px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center gap-2 text-sm transition-all"
-            >
-              <UserPlus className="w-4 h-4" />
-              Issue Invite Link
-            </button>
-          </div>
+          <Button
+            onClick={() => {
+              setCreatedInviteUrl(null);
+              setInviteEmail('');
+              setShowInviteModal(true);
+            }}
+            variant="primary"
+            size="md"
+            className="gap-2 self-start sm:self-center"
+          >
+            <UserPlus className="w-4 h-4" />
+            Invite People
+          </Button>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs uppercase font-semibold tracking-wider">Total Active Staff</span>
-              <Users className="w-5 h-5 text-indigo-400" />
+        {/* 4-Stat Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <Card hoverLift>
+            <div className="flex items-center justify-between text-slate-400 mb-2 font-mono text-[11px] uppercase font-bold tracking-wider">
+              <span>Active Employees</span>
+              <Users className="w-4 h-4 text-[#d0f347]" />
             </div>
-            <div className="text-3xl font-black text-white">{overview?.employees?.length || 0}</div>
-            <div className="text-xs text-slate-400 mt-2">Scoped to organization org_1</div>
-          </div>
+            <div className="text-4xl font-extrabold text-white">{activeCount}</div>
+            <div className="font-mono text-[11px] text-slate-500 mt-1">Scoped to org_1</div>
+          </Card>
 
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs uppercase font-semibold tracking-wider">Pending HR Approvals</span>
-              <Clock className="w-5 h-5 text-amber-400" />
+          <Card hoverLift>
+            <div className="flex items-center justify-between text-slate-400 mb-2 font-mono text-[11px] uppercase font-bold tracking-wider">
+              <span>Reviews in Progress</span>
+              <FileText className="w-4 h-4 text-[#d0f347]" />
             </div>
-            <div className="text-3xl font-black text-amber-400">{pendingCount}</div>
-            <div className="text-xs text-slate-400 mt-2">Requires admin verification</div>
-          </div>
+            <div className="text-4xl font-extrabold text-[#d0f347]">{inProgressCount}</div>
+            <div className="font-mono text-[11px] text-slate-500 mt-1">Accumulating evidence logs</div>
+          </Card>
 
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs uppercase font-semibold tracking-wider">Bias System Status</span>
-              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+          <Card hoverLift>
+            <div className="flex items-center justify-between text-slate-400 mb-2 font-mono text-[11px] uppercase font-bold tracking-wider">
+              <span>Pending Approvals</span>
+              <Clock className="w-4 h-4 text-[#fbbf24]" />
             </div>
-            <div className="text-3xl font-black text-emerald-400">Active</div>
-            <div className="text-xs text-slate-400 mt-2">Recency & Source diversity engine</div>
-          </div>
+            <div className="text-4xl font-extrabold text-[#fbbf24]">{pendingCount}</div>
+            <div className="font-mono text-[11px] text-slate-500 mt-1">Registration queue approval</div>
+          </Card>
+
+          <Card hoverLift>
+            <div className="flex items-center justify-between text-slate-400 mb-2 font-mono text-[11px] uppercase font-bold tracking-wider">
+              <span>Flagged Reviews</span>
+              <AlertTriangle className="w-4 h-4 text-[#fb7185]" />
+            </div>
+            <div className="text-4xl font-extrabold text-[#fb7185]">{flaggedCount}</div>
+            <div className="font-mono text-[11px] text-slate-500 mt-1">Bias threshold warning</div>
+          </Card>
         </div>
 
-        {/* Employee Review Table */}
-        <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
-          <div className="px-6 py-5 border-b border-slate-800 flex items-center justify-between">
+        {/* Roster Table */}
+        <Card className="p-0 overflow-hidden shadow-2xl">
+          <div className="p-6 border-b border-[#2e2e2e] bg-[#181818] flex flex-col md:flex-row md:items-center justify-between gap-4">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Users className="w-5 h-5 text-indigo-400" />
+              <Users className="w-4 h-4 text-[#d0f347]" />
               Employee Review Roster
             </h2>
-            <span className="text-xs text-slate-400">Select employee to inspect bias & draft report</span>
+
+            <div className="flex items-center gap-2">
+              <Filter className="w-3.5 h-3.5 text-slate-400" />
+              <select
+                value={departmentFilter}
+                onChange={(e) => setDepartmentFilter(e.target.value)}
+                className="bg-[#181818] border border-[#2e2e2e] text-white text-xs px-3.5 py-2 rounded-xl focus:outline-none focus:border-[#d0f347]"
+              >
+                <option value="all">All Departments</option>
+                <option value="engineering">Engineering</option>
+                <option value="design">Design</option>
+                <option value="product">Product</option>
+              </select>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-900/80 text-xs uppercase text-slate-400 font-semibold border-b border-slate-800">
+            <table className="w-full text-left text-xs text-white">
+              <thead className="bg-[#181818] font-mono text-[11px] uppercase text-slate-400 font-bold tracking-wider border-b border-[#2e2e2e]">
                 <tr>
                   <th className="px-6 py-4">Employee</th>
                   <th className="px-6 py-4">Department</th>
                   <th className="px-6 py-4">Role</th>
                   <th className="px-6 py-4">Review Status</th>
+                  <th className="px-6 py-4">Last Updated</th>
                   <th className="px-6 py-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {overview?.employees?.map((emp) => (
-                  <tr key={emp.id} className="hover:bg-slate-900/40 transition-colors">
-                    <td className="px-6 py-4 font-semibold text-white flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-slate-800 text-indigo-300 font-bold flex items-center justify-center text-sm border border-slate-700">
+              <tbody className="divide-y divide-[#2e2e2e]">
+                {filteredEmployees.map((emp) => (
+                  <tr key={emp.id} className="hover:bg-[#181818] transition-colors card-hover-lift cursor-pointer">
+                    <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-[#d0f347]/15 text-[#d0f347] font-mono font-bold flex items-center justify-center text-xs border border-[#d0f347]/30">
                         {emp.name.charAt(0)}
                       </div>
                       <div>
-                        <div>{emp.name}</div>
-                        <div className="text-xs text-slate-500 font-normal">{emp.id}</div>
+                        <div className="font-bold text-white text-sm">{emp.name}</div>
+                        <div className="font-mono text-[11px] text-slate-500">{emp.id}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-slate-300">{emp.department}</td>
+                    <td className="px-6 py-4 text-slate-300 font-medium">{emp.department}</td>
                     <td className="px-6 py-4 text-slate-400 capitalize">{emp.role}</td>
                     <td className="px-6 py-4">
-                      {emp.review_status === 'approved' ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
-                          <CheckCircle className="w-3.5 h-3.5" /> Approved
-                        </span>
-                      ) : emp.review_status === 'draft' ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold">
-                          <FileText className="w-3.5 h-3.5" /> Draft Ready
-                        </span>
-                      ) : emp.review_status === 'needs_input' ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold">
-                          <AlertTriangle className="w-3.5 h-3.5" /> Needs Input
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-xs font-medium">
-                          Pending
-                        </span>
-                      )}
+                      <StatusBadge status={emp.review_status} />
                     </td>
+                    <td className="px-6 py-4 font-mono text-[11px] text-slate-400">Today</td>
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => navigate(`/hr/review/${emp.id}`)}
-                        className="px-4 py-2 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 rounded-xl text-xs font-semibold transition-all inline-flex items-center gap-1.5"
+                        className="px-3.5 py-2 bg-[#d0f347]/15 hover:bg-[#d0f347] text-[#d0f347] hover:text-[#141414] border border-[#d0f347]/30 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1"
                       >
                         Inspect Review <ExternalLink className="w-3.5 h-3.5" />
                       </button>
@@ -252,36 +269,36 @@ export default function HRDashboardPage() {
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </main>
 
       {/* Invite Modal */}
       {showInviteModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex justify-center items-center p-4 z-50">
-          <div className="glass-panel p-6 rounded-2xl max-w-md w-full border border-slate-800 shadow-2xl relative">
-            <h3 className="text-xl font-bold text-white mb-1">Issue HR Invite Link</h3>
-            <p className="text-slate-400 text-xs mb-6">Generates a signed, time-limited token scoped to your organization.</p>
+        <div className="fixed inset-0 bg-[#141414]/80 backdrop-blur-md flex justify-center items-center p-4 z-50 animate-backdrop-enter">
+          <Card className="max-w-md w-full p-6 shadow-2xl space-y-4 animate-modal-card-enter">
+            <h3 className="text-xl font-bold text-white">Issue Signed Invite Token</h3>
+            <p className="text-xs text-slate-400">Generates a time-limited 7-day invite link pre-authorized for your organization.</p>
 
             {!createdInviteUrl ? (
               <form onSubmit={handleCreateInvite} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Invitee Email</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Invitee Email</label>
                   <input
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="new.employee@acme.com"
-                    className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Role</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Role</label>
                   <select
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
                   >
                     <option value="employee">Employee</option>
                     <option value="manager">Manager</option>
@@ -290,58 +307,63 @@ export default function HRDashboardPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">Department</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Department</label>
                   <input
                     type="text"
                     value={inviteDepartment}
                     onChange={(e) => setInviteDepartment(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
-                  <button
+                <div className="flex justify-end gap-3 pt-3 border-t border-[#2e2e2e]">
+                  <Button
                     type="button"
                     onClick={() => setShowInviteModal(false)}
-                    className="px-4 py-2.5 text-slate-400 hover:text-white text-xs font-semibold"
+                    variant="outline"
+                    size="sm"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
                     disabled={inviteLoading}
-                    className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/30"
+                    variant="primary"
+                    size="sm"
                   >
-                    {inviteLoading ? 'Generating...' : 'Generate Invite Link'}
-                  </button>
+                    {inviteLoading ? 'Generating...' : 'Send Invite Link'}
+                  </Button>
                 </div>
               </form>
             ) : (
               <div className="space-y-4">
-                <div className="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                  <label className="block text-xs text-slate-400 font-semibold mb-1">Signed Invite Link (7-day Expiry):</label>
-                  <div className="text-xs text-indigo-300 font-mono break-all bg-slate-950 p-3 rounded-lg border border-slate-800 mb-3">
+                <div className="p-4 bg-[#181818] rounded-xl border border-[#2e2e2e]">
+                  <label className="block text-xs text-slate-400 font-mono font-semibold mb-1">Signed Invite Link (7-day Expiry):</label>
+                  <div className="text-xs text-[#d0f347] font-mono break-all bg-[#141414] p-3 rounded-lg border border-[#2e2e2e] mb-3">
                     {createdInviteUrl}
                   </div>
-                  <button
+                  <Button
                     onClick={copyToClipboard}
-                    className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2"
+                    variant="primary"
+                    size="sm"
+                    className="w-full justify-center gap-2"
                   >
-                    {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                     {copied ? 'Copied to Clipboard!' : 'Copy Link'}
-                  </button>
+                  </Button>
                 </div>
                 <div className="text-right">
-                  <button
+                  <Button
                     onClick={() => setShowInviteModal(false)}
-                    className="px-4 py-2 bg-slate-800 text-white text-xs font-semibold rounded-lg"
+                    variant="outline"
+                    size="sm"
                   >
                     Close
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
-          </div>
+          </Card>
         </div>
       )}
     </div>

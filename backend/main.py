@@ -1,17 +1,31 @@
 import os
+import sys
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Ensure backend root and parent directories are in sys.path
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+if PARENT_DIR not in sys.path:
+    sys.path.insert(0, PARENT_DIR)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.db.session import init_db
-from backend.db.seed_data import seed
+from db.session import init_db
+from db.seed_data import seed
 
-from backend.auth.router import router as auth_router
-from backend.invites.router import router as invites_router
-from backend.hr.router import router as hr_router
-from backend.feedback.router import router as feedback_router
-from backend.daily_drafts.router import router as daily_drafts_router
-from backend.evidence.router import router as evidence_router
-from backend.reviews.router import router as reviews_router
+from auth.router import router as auth_router
+from invites.router import router as invites_router
+from hr.router import router as hr_router
+from feedback.router import router as feedback_router
+from daily_drafts.router import router as daily_drafts_router
+from evidence.router import router as evidence_router
+from reviews.router import router as reviews_router
 
 app = FastAPI(
     title="Verity API",
@@ -48,4 +62,4 @@ def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
