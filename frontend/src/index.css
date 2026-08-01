@@ -21,7 +21,7 @@
 .qount-btn-lime:hover {
   background-color: #beeb30;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px -4px rgba(208, 243, 71, 0.3);
+  box-shadow: 0 8px 20px -4px rgba(208, 243, 71, 0.4);
 }
 
 .qount-btn-white {
@@ -65,23 +65,38 @@
 }
 
 .card-hover-lift {
-  transition: transform 175ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 175ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: transform 175ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 175ms cubic-bezier(0.2, 0.7, 0.2, 1), border-color 175ms ease;
 }
 
 .card-hover-lift:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.5);
+  border-color: rgba(208, 243, 71, 0.3);
 }
 
 .button-hover-lift {
-  transition: transform 150ms cubic-bezier(0.2, 0.7, 0.2, 1), background-color 150ms ease;
+  transition: transform 150ms cubic-bezier(0.2, 0.7, 0.2, 1), background-color 150ms ease, box-shadow 150ms ease;
 }
 
 .button-hover-lift:hover:not(:disabled) {
   transform: translateY(-2px);
 }
 
-/* Animations */
+/* Glowing Lime Pulse Keyframe */
+@keyframes glowPulseLime {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(208, 243, 71, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 12px 3px rgba(208, 243, 71, 0.6);
+  }
+}
+
+.glow-pulse-lime {
+  animation: glowPulseLime 2.5s infinite ease-in-out;
+}
+
+/* Evidence Pill Scale-In Animation */
 @keyframes pillScaleIn {
   0% {
     opacity: 0;
@@ -101,6 +116,7 @@
   transition: background-color 200ms cubic-bezier(0.2, 0.7, 0.2, 1), color 200ms cubic-bezier(0.2, 0.7, 0.2, 1), border-color 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
+/* Modal & Popover Entrance */
 @keyframes backdropFadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
@@ -109,11 +125,11 @@
 @keyframes modalCardRise {
   0% {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(8px) scale(0.98);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 

@@ -12,11 +12,11 @@ import {
 } from 'lucide-react';
 
 /* -------------------------------------------------------------------------- */
-/* LOGO (QOUNT STYLE)                                                         */
+/* LOGO (QOUNT STYLE WITH GLOW PULSE)                                         */
 /* -------------------------------------------------------------------------- */
 export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => (
   <div className={`flex items-center gap-2.5 ${className}`}>
-    <div className="w-8 h-8 rounded-lg bg-[#d0f347] text-[#141414] flex items-center justify-center font-black">
+    <div className="w-8 h-8 rounded-lg bg-[#d0f347] text-[#141414] flex items-center justify-center font-black shadow-md shadow-[#d0f347]/20 glow-pulse-lime">
       <Hexagon className="w-5 h-5 fill-[#141414]" />
     </div>
     <span className="font-extrabold text-xl tracking-tight text-white uppercase">
@@ -27,7 +27,7 @@ export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => (
 
 export const LogoDark: React.FC<{ className?: string }> = ({ className = '' }) => (
   <div className={`flex items-center gap-2.5 ${className}`}>
-    <div className="w-8 h-8 rounded-lg bg-[#d0f347] text-[#141414] flex items-center justify-center font-black">
+    <div className="w-8 h-8 rounded-lg bg-[#d0f347] text-[#141414] flex items-center justify-center font-black shadow-md shadow-[#d0f347]/20 glow-pulse-lime">
       <Hexagon className="w-5 h-5 fill-[#141414]" />
     </div>
     <span className="font-extrabold text-xl tracking-tight text-white uppercase">
@@ -94,7 +94,7 @@ export const Card: React.FC<{
 );
 
 /* -------------------------------------------------------------------------- */
-/* STATUS BADGE                                                               */
+/* STATUS BADGE WITH 200MS CROSSFADE & GLOW PULSE                             */
 /* -------------------------------------------------------------------------- */
 export type StatusType =
   | 'not_started'
@@ -125,7 +125,7 @@ export const StatusBadge: React.FC<{ status: StatusType | string; className?: st
   if (norm === 'flagged') {
     return (
       <span className={`${baseClass} bg-[#f43f5e]/15 text-[#fb7185] border border-[#f43f5e]/30 ${className}`}>
-        <AlertTriangle className="w-3.5 h-3.5 text-[#fb7185]" />
+        <AlertTriangle className="w-3.5 h-3.5 text-[#fb7185] animate-pulse" />
         Flagged
       </span>
     );
@@ -151,7 +151,7 @@ export const StatusBadge: React.FC<{ status: StatusType | string; className?: st
 
   if (norm === 'drafting' || norm === 'draft') {
     return (
-      <span className={`${baseClass} bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 ${className}`}>
+      <span className={`${baseClass} bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 glow-pulse-lime ${className}`}>
         <FileEdit className="w-3.5 h-3.5 text-[#d0f347]" />
         Draft Ready
       </span>
@@ -167,7 +167,7 @@ export const StatusBadge: React.FC<{ status: StatusType | string; className?: st
 };
 
 /* -------------------------------------------------------------------------- */
-/* EVIDENCE PILL + CLAIM                                                      */
+/* EVIDENCE PILL + CLAIM WITH ENTRANCE ANIMATION                              */
 /* -------------------------------------------------------------------------- */
 interface ClaimProps {
   text: string;
@@ -218,7 +218,7 @@ export const Claim: React.FC<ClaimProps> = ({
       )}
 
       {showPopover && supported && (
-        <div className="absolute left-0 bottom-full mb-2 w-72 p-3.5 bg-[#1c1c1c] border border-[#2e2e2e] rounded-xl shadow-2xl z-50 text-xs text-white">
+        <div className="absolute left-0 bottom-full mb-2 w-72 p-3.5 bg-[#1c1c1c] border border-[#2e2e2e] rounded-xl shadow-2xl z-50 text-xs text-white animate-modal-card-enter">
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#2e2e2e]">
             <span className="font-mono font-bold text-[#d0f347] flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5" /> Source Verification
@@ -245,7 +245,7 @@ export const Claim: React.FC<ClaimProps> = ({
 };
 
 /* -------------------------------------------------------------------------- */
-/* SCORE GAUGE                                                                */
+/* SCORE GAUGE WITH MOUNT ANIMATION & PULSING THRESHOLD                       */
 /* -------------------------------------------------------------------------- */
 export const ScoreGauge: React.FC<{
   label: string;
@@ -281,7 +281,7 @@ export const ScoreGauge: React.FC<{
           style={{ width: `${filledWidth}%` }}
         />
         <div
-          className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] z-10"
+          className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] z-10 animate-pulse"
           style={{ left: `${thresholdPct}%` }}
           title={`Threshold: ${thresholdPct}%`}
         />
@@ -296,8 +296,8 @@ export const ScoreGauge: React.FC<{
 /* AUDIT FLAG CARD                                                            */
 /* -------------------------------------------------------------------------- */
 export const AuditFlagCard: React.FC<{ flag: string }> = ({ flag }) => (
-  <div className="p-3.5 bg-[#C98A2B]/10 border border-[#C98A2B]/30 rounded-xl text-amber-200 text-xs flex items-start gap-2.5">
-    <AlertTriangle className="w-4 h-4 text-[#fbbf24] flex-shrink-0 mt-0.5" />
+  <div className="p-3.5 bg-[#C98A2B]/10 border border-[#C98A2B]/30 rounded-xl text-amber-200 text-xs flex items-start gap-2.5 card-hover-lift">
+    <AlertTriangle className="w-4 h-4 text-[#fbbf24] flex-shrink-0 mt-0.5 animate-pulse" />
     <span className="font-medium leading-relaxed">{flag}</span>
   </div>
 );
