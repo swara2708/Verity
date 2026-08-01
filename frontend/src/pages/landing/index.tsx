@@ -668,6 +668,220 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* 4. HOW IT WORKS SECTION */}
+      <section id="how-it-works" className="py-24 bg-[#181818] border-t border-[#2e2e2e] relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-14 text-center max-w-2xl mx-auto scroll-popup">
+            <span className="qount-eyebrow">End-to-End Intelligence Workflow</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+              How Verity Powers Bias-Aware Reviews
+            </h2>
+            <p className="text-slate-400 text-xs sm:text-sm mt-2">
+              A 4-step continuous evidence flywheel that eliminates memory bias and recency traps.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <BorderGlow
+              glowColor="72 85 62"
+              backgroundColor="#1c1c1c"
+              borderRadius={20}
+              glowRadius={30}
+              glowIntensity={1.0}
+              colors={['#d0f347', '#beeb30', '#10b981']}
+              className="scroll-popup"
+            >
+              <div className="p-6 space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 flex items-center justify-center font-mono font-extrabold text-sm">
+                  01
+                </div>
+                <h3 className="font-extrabold text-lg text-white">Daily Draft & Log Sync</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Employees log lightweight daily work notes and pull requests. Continuous evidence accumulates over 90 days.
+                </p>
+              </div>
+            </BorderGlow>
+
+            <BorderGlow
+              glowColor="72 85 62"
+              backgroundColor="#1c1c1c"
+              borderRadius={20}
+              glowRadius={30}
+              glowIntensity={1.0}
+              colors={['#d0f347', '#beeb30', '#10b981']}
+              className="scroll-popup"
+            >
+              <div className="p-6 space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 flex items-center justify-center font-mono font-extrabold text-sm">
+                  02
+                </div>
+                <h3 className="font-extrabold text-lg text-white">Semantic Claim Extraction</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Verity AI extracts individual performance claims and matches them against GitHub PRs, JIRA tickets, and Slack logs.
+                </p>
+              </div>
+            </BorderGlow>
+
+            <BorderGlow
+              glowColor="72 85 62"
+              backgroundColor="#1c1c1c"
+              borderRadius={20}
+              glowRadius={30}
+              glowIntensity={1.0}
+              colors={['#d0f347', '#beeb30', '#10b981']}
+              className="scroll-popup"
+            >
+              <div className="p-6 space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 flex items-center justify-center font-mono font-extrabold text-sm">
+                  03
+                </div>
+                <h3 className="font-extrabold text-lg text-white">Balanced Peer Feedback</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Multi-perspective feedback requests ensure self, peer, and manager inputs are balanced across time periods.
+                </p>
+              </div>
+            </BorderGlow>
+
+            <BorderGlow
+              glowColor="72 85 62"
+              backgroundColor="#1c1c1c"
+              borderRadius={20}
+              glowRadius={30}
+              glowIntensity={1.0}
+              colors={['#d0f347', '#beeb30', '#10b981']}
+              className="scroll-popup"
+            >
+              <div className="p-6 space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 flex items-center justify-center font-mono font-extrabold text-sm">
+                  04
+                </div>
+                <h3 className="font-extrabold text-lg text-white">Deterministic Bias Audit</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Pure mathematical formulas compute Recency Index and Source Diversity scores before HR signs off on reviews.
+                </p>
+              </div>
+            </BorderGlow>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. EVIDENCE ENGINE SECTION */}
+      <section id="evidence-engine" className="py-24 max-w-7xl mx-auto px-6 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-5 space-y-5 scroll-popup">
+            <span className="qount-eyebrow">Signature Claim System</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Every Performance Claim Backed by Immutable Evidence
+            </h2>
+            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">
+              Verity underlines verified performance claims with evidence badges. Any claim lacking an underlying GitHub PR, Slack log, or JIRA ticket gets flagged in amber for human review.
+            </p>
+            <div className="pt-2">
+              <Link
+                to="/hr/dashboard"
+                className="px-5 py-2.5 bg-[#d0f347] hover:bg-[#beeb30] text-[#141414] font-extrabold rounded-lg text-xs transition-all inline-flex items-center gap-2"
+              >
+                Inspect Live Claims Queue <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          <div className="lg:col-span-7 scroll-popup">
+            <div className="bg-[#222222] border border-[#2e2e2e] rounded-2xl p-6 space-y-5">
+              <div className="flex items-center justify-between border-b border-[#2e2e2e] pb-3">
+                <div className="flex items-center gap-2">
+                  <FileCheck className="w-5 h-5 text-[#d0f347]" />
+                  <span className="font-bold text-white text-sm">Draft Review Claim Inspection</span>
+                </div>
+                <span className="font-mono text-[11px] text-[#d0f347] bg-[#d0f347]/10 px-2.5 py-1 rounded-full font-bold">
+                  2 Verified &bull; 1 Flagged
+                </span>
+              </div>
+
+              <div className="space-y-4 text-sm leading-relaxed text-slate-300">
+                <div className="p-4 bg-[#181818] border border-[#2e2e2e] rounded-xl space-y-2">
+                  <div className="text-xs font-mono font-bold text-slate-400 uppercase">Strength Claim</div>
+                  <p>
+                    Successfully <span className="evidence-claim-verified font-bold text-white">shipped multi-tenant authentication backend and PostgreSQL migration</span>{' '}
+                    <span className="inline-flex items-center gap-1 font-mono text-[11px] px-2 py-0.5 rounded-full bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 font-bold">
+                      PR #42 &bull; JIRA-104
+                    </span>{' '}
+                    two weeks ahead of quarterly sprint schedule.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-[#181818] border border-[#2e2e2e] rounded-xl space-y-2">
+                  <div className="text-xs font-mono font-bold text-amber-400 uppercase">Flagged Growth Area</div>
+                  <p>
+                    Occasionally <span className="evidence-claim-flagged font-bold text-white">missed weekly architecture sync meetings</span>{' '}
+                    <span className="inline-flex items-center gap-1 font-mono text-[11px] px-2 py-0.5 rounded-full bg-[#C98A2B]/15 text-[#fbbf24] border border-[#C98A2B]/30 font-bold">
+                      no source
+                    </span>{' '}
+                    without providing prior calendar updates.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. BIAS AUDITING SECTION */}
+      <section id="bias-audit" className="py-24 bg-[#181818] border-t border-[#2e2e2e] relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-14 text-center max-w-2xl mx-auto scroll-popup">
+            <span className="qount-eyebrow">Deterministic Bias Auditing Engine</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+              Pure Mathematical Audit Rules
+            </h2>
+            <p className="text-slate-400 text-xs sm:text-sm mt-2">
+              Verity computes hard numerical metrics to catch recency bias and feedback concentration before reviews are finalized.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 scroll-popup">
+            <div className="bg-[#222222] border border-[#2e2e2e] p-6 rounded-2xl space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-slate-400 uppercase">Recency Index</span>
+                <span className="font-mono text-xs font-bold text-[#d0f347]">0.25 (Pass)</span>
+              </div>
+              <div className="w-full bg-[#181818] h-3 rounded-full overflow-hidden border border-[#2e2e2e]">
+                <div className="bg-[#d0f347] h-full w-[25%]" />
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Calculates the weight of feedback accumulated in the final 14 days vs. the full 90-day cycle. Threshold: &lt; 0.60.
+              </p>
+            </div>
+
+            <div className="bg-[#222222] border border-[#2e2e2e] p-6 rounded-2xl space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-slate-400 uppercase">Source Diversity</span>
+                <span className="font-mono text-xs font-bold text-[#d0f347]">85% (4 Sources)</span>
+              </div>
+              <div className="w-full bg-[#181818] h-3 rounded-full overflow-hidden border border-[#2e2e2e]">
+                <div className="bg-[#d0f347] h-full w-[85%]" />
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Measures feedback balance across Self, Peers, Direct Reports, and Manager to prevent single-source dependency.
+              </p>
+            </div>
+
+            <div className="bg-[#222222] border border-[#2e2e2e] p-6 rounded-2xl space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-slate-400 uppercase">PostgreSQL RLS</span>
+                <span className="font-mono text-xs font-bold text-[#d0f347]">100% Enforced</span>
+              </div>
+              <div className="w-full bg-[#181818] h-3 rounded-full overflow-hidden border border-[#2e2e2e]">
+                <div className="bg-[#d0f347] h-full w-[100%]" />
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Tenant isolation enforced at database level via row-level security (`org_id = auth.jwt() -&gt;&gt; 'org_id'`).
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-8 bg-[#181818] border-t border-[#2e2e2e] text-slate-400 text-xs">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
