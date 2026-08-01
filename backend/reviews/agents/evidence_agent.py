@@ -65,8 +65,7 @@ def gather_evidence(employee_id: str, org_id: str, session: Session):
 def match_claims_to_evidence(claims: list[str], evidence_data: dict) -> list[dict]:
     """
     For each claim, searches across evidence items AND daily_drafts for the employee.
-    Uses Google Gemini API via call_llm if GEMINI_API_KEY is available,
-    otherwise falls back to rule-based keyword matching.
+    Tags each claim as supported (with confidence high/medium/low + evidence_id + link_url if present).
     """
     evidence_list = evidence_data.get("evidence", [])
     drafts_list = evidence_data.get("daily_drafts", [])
@@ -92,6 +91,7 @@ Target JSON structure:
   {{
     "claim": "exact claim text",
     "supported": true,
+    "confidence": "high | medium | low",
     "evidence_id": "matched_evidence_id_or_null",
     "link_url": "matched_link_url_or_null"
   }}
@@ -100,6 +100,10 @@ Target JSON structure:
             raw_response = call_llm(prompt)
             parsed = parse_json_response(raw_response)
             if isinstance(parsed, list):
+                # Ensure confidence tag is populated
+                for item in parsed:
+                    if "confidence" not in item:
+                        item["confidence"] = "high" if item.get("supported") and item.get("evidence_id") else ("medium" if item.get("supported") else "low")
                 return parsed
         except Exception as e:
             print(f"[Evidence Agent] Gemini API claim matching call failed, using rule-based matching: {e}")
@@ -115,19 +119,20 @@ Target JSON structure:
         words = [w.lower() for w in claim_clean.split() if len(w) > 3]
         matched_item = None
 
-        # 1. Search across formal evidence items
+        # 1. Search across formal evidence items (HIGH confidence)
         for ev in evidence_list:
             ev_text = (ev.get("description", "") + " " + ev.get("evidence_type", "")).lower()
             if any(word in ev_text for word in words):
                 matched_item = {
                     "claim": claim_clean,
                     "supported": True,
+                    "confidence": "high",
                     "evidence_id": ev.get("id"),
                     "link_url": ev.get("link_url")
                 }
                 break
 
-        # 2. Search across daily_drafts if not matched in formal evidence
+        # 2. Search across daily_drafts if not matched in formal evidence (MEDIUM confidence)
         if not matched_item:
             for dd in drafts_list:
                 dd_text = dd.get("content", "").lower()
@@ -135,16 +140,18 @@ Target JSON structure:
                     matched_item = {
                         "claim": claim_clean,
                         "supported": True,
+                        "confidence": "medium",
                         "evidence_id": dd.get("id"),
                         "link_url": None
                     }
                     break
 
-        # 3. Unsupported fallback
+        # 3. Unsupported fallback (LOW confidence)
         if not matched_item:
             matched_item = {
                 "claim": claim_clean,
                 "supported": False,
+                "confidence": "low",
                 "evidence_id": None,
                 "link_url": None
             }

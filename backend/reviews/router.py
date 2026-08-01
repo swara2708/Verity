@@ -54,8 +54,13 @@ def generate_review(
     claim_evidence = match_claims_to_evidence(claims_to_match, evidence_data)
     report["claim_evidence"] = claim_evidence
 
+    # Fetch Organization to check for custom bias_thresholds_json
+    from backend.db.schema import Organization
+    org = session.get(Organization, current_user.org_id)
+    bias_thresholds = json.loads(org.bias_thresholds_json) if org and org.bias_thresholds_json else None
+
     # Compute deterministic bias scores using Bias Agent
-    bias_metrics = analyze_bias(evidence_data, report, claim_evidence)
+    bias_metrics = analyze_bias(evidence_data, report, claim_evidence, bias_thresholds=bias_thresholds)
 
     # Check for existing review or create new
     existing_review = session.exec(
@@ -94,7 +99,10 @@ def generate_review(
         existing_bias.recency_score = bias_metrics["recency_score"]
         existing_bias.diversity_score = bias_metrics["diversity_score"]
         existing_bias.unsupported_claims = bias_metrics["unsupported_claims"]
-        existing_bias.flags_json = json.dumps(bias_metrics["flags"])
+        existing_bias.flags_json = json.dumps({
+            "flags": bias_metrics["flags"],
+            "explainability_trail": bias_metrics["explainability_trail"]
+        })
     else:
         bias_obj = BiasReport(
             id=bias_id,
@@ -102,7 +110,10 @@ def generate_review(
             recency_score=bias_metrics["recency_score"],
             diversity_score=bias_metrics["diversity_score"],
             unsupported_claims=bias_metrics["unsupported_claims"],
-            flags_json=json.dumps(bias_metrics["flags"])
+            flags_json=json.dumps({
+                "flags": bias_metrics["flags"],
+                "explainability_trail": bias_metrics["explainability_trail"]
+            })
         )
         session.add(bias_obj)
 
@@ -140,11 +151,21 @@ def get_review(
     ).first()
 
     report_dict = json.loads(review.report_json) if review.report_json else {}
+    
+    parsed_flags_json = json.loads(bias.flags_json) if bias and bias.flags_json else {}
+    if isinstance(parsed_flags_json, list):
+        flags_array = parsed_flags_json
+        trail_dict = {}
+    else:
+        flags_array = parsed_flags_json.get("flags", [])
+        trail_dict = parsed_flags_json.get("explainability_trail", {})
+
     bias_dict = {
         "recency_score": bias.recency_score if bias else 0.0,
         "diversity_score": bias.diversity_score if bias else 0.0,
         "unsupported_claims": bias.unsupported_claims if bias else 0,
-        "flags": json.loads(bias.flags_json) if bias and bias.flags_json else []
+        "flags": flags_array,
+        "explainability_trail": trail_dict
     }
 
     return {
