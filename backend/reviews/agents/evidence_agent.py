@@ -33,7 +33,7 @@ def gather_evidence(employee_id: str, org_id: str, session: Session):
                 "id": f.id,
                 "source_type": f.source_type,
                 "content": f.content,
-                "created_at": f.created_at
+                "created_at": f.created_at.isoformat() + "Z" if hasattr(f.created_at, "isoformat") else str(f.created_at)
             }
             for f in feedback
         ],
@@ -42,7 +42,7 @@ def gather_evidence(employee_id: str, org_id: str, session: Session):
                 "id": d.id,
                 "entry_date": d.entry_date,
                 "content": d.content,
-                "created_at": d.created_at
+                "created_at": d.created_at.isoformat() + "Z" if hasattr(d.created_at, "isoformat") else str(d.created_at)
             }
             for d in daily_drafts
         ],
