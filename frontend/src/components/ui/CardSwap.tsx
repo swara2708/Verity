@@ -51,7 +51,7 @@ export interface CardSwapProps {
   pauseOnHover?: boolean;
   onCardClick?: (idx: number) => void;
   skewAmount?: number;
-  easing?: 'linear' | 'elastic';
+  easing?: 'linear' | 'elastic' | 'snappy';
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
@@ -62,33 +62,36 @@ export const CardSwap: React.FC<CardSwapProps> = ({
   height = 400,
   cardDistance = 30,
   verticalDistance = 25,
-  delay = 4000,
+  delay = 2600,
   pauseOnHover = true,
   onCardClick,
   skewAmount = 2,
-  easing = 'elastic',
+  easing = 'snappy',
   children,
   className = '',
   style
 }) => {
-  const config =
-    easing === 'elastic'
-      ? {
-          ease: 'elastic.out(0.6,0.9)',
-          durDrop: 1.6,
-          durMove: 1.6,
-          durReturn: 1.6,
-          promoteOverlap: 0.8,
-          returnDelay: 0.05
-        }
-      : {
-          ease: 'power1.inOut',
-          durDrop: 0.8,
-          durMove: 0.8,
-          durReturn: 0.8,
-          promoteOverlap: 0.45,
-          returnDelay: 0.2
-        };
+  // Fast, snappy, ultra-smooth GSAP configuration (0.5s duration instead of 1.6s)
+  const config = useMemo(() => {
+    if (easing === 'elastic') {
+      return {
+        ease: 'power2.out',
+        durDrop: 0.6,
+        durMove: 0.6,
+        durReturn: 0.6,
+        promoteOverlap: 0.6,
+        returnDelay: 0.1
+      };
+    }
+    return {
+      ease: 'power3.inOut',
+      durDrop: 0.48,
+      durMove: 0.48,
+      durReturn: 0.48,
+      promoteOverlap: 0.5,
+      returnDelay: 0.08
+    };
+  }, [easing]);
 
   const childArr = useMemo(() => Children.toArray(children), [children]);
   const refs = useMemo(
@@ -116,7 +119,8 @@ export const CardSwap: React.FC<CardSwapProps> = ({
       tlRef.current = tl;
 
       tl.to(elFront, {
-        y: '+=350',
+        y: '+=280',
+        opacity: 0.85,
         duration: config.durDrop,
         ease: config.ease
       });
@@ -136,7 +140,7 @@ export const CardSwap: React.FC<CardSwapProps> = ({
             duration: config.durMove,
             ease: config.ease
           },
-          `promote+=${i * 0.12}`
+          `promote+=${i * 0.06}`
         );
       });
 
@@ -155,6 +159,7 @@ export const CardSwap: React.FC<CardSwapProps> = ({
           x: backSlot.x,
           y: backSlot.y,
           z: backSlot.z,
+          opacity: 1,
           duration: config.durReturn,
           ease: config.ease
         },
@@ -187,7 +192,7 @@ export const CardSwap: React.FC<CardSwapProps> = ({
       };
     }
     return () => clearInterval(intervalRef.current);
-  }, [cardDistance, verticalDistance, delay, pauseOnHover, skewAmount, easing, refs]);
+  }, [cardDistance, verticalDistance, delay, pauseOnHover, skewAmount, config, refs]);
 
   const rendered = childArr.map((child, i) =>
     isValidElement(child)

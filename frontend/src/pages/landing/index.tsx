@@ -331,10 +331,10 @@ export default function LandingPage() {
               height={360}
               cardDistance={35}
               verticalDistance={30}
-              delay={4200}
+              delay={2600}
               pauseOnHover={true}
               skewAmount={2}
-              easing="elastic"
+              easing="snappy"
             >
               {/* Stack Card 1: Review Intelligence Hub List */}
               <Card className="bg-[#1c1c1c] border border-[#2e2e2e] p-4 shadow-2xl overflow-hidden grid grid-cols-12 gap-3">
