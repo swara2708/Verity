@@ -32,6 +32,7 @@ import LogoLoop, { LogoItem } from '../../components/ui/LogoLoop';
 import CardSwap, { Card } from '../../components/ui/CardSwap';
 import BorderGlow from '../../components/ui/BorderGlow';
 import SwapColumnFeatures from '../../components/ui/SwapColumnFeatures';
+import SplashCursor from '../../components/ui/SplashCursor';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -250,6 +251,22 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#161616] text-white font-sans selection:bg-[#d0f347] selection:text-[#141414] overflow-x-hidden">
+      {/* React Bits Interactive Fluid Simulation SplashCursor */}
+      <SplashCursor
+        SIM_RESOLUTION={128}
+        DYE_RESOLUTION={1440}
+        DENSITY_DISSIPATION={3.5}
+        VELOCITY_DISSIPATION={2.0}
+        PRESSURE={0.1}
+        PRESSURE_ITERATIONS={20}
+        CURL={3}
+        SPLAT_RADIUS={0.2}
+        SPLAT_FORCE={6000}
+        SHADING={true}
+        COLOR_UPDATE_SPEED={10}
+        RAINBOW_MODE={true}
+      />
+
       {/* Top Navbar */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
