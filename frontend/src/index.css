@@ -51,17 +51,15 @@
 }
 
 .evidence-claim-verified {
-  text-decoration: underline;
-  text-decoration-color: #d0f347;
-  text-decoration-thickness: 2.5px;
-  text-underline-offset: 4px;
+  text-decoration: none;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .evidence-claim-flagged {
-  text-decoration: underline;
-  text-decoration-color: #fb7185;
-  text-decoration-thickness: 2.5px;
-  text-underline-offset: 4px;
+  text-decoration: none;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .card-hover-lift {
