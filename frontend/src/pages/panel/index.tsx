@@ -27,14 +27,30 @@ interface EvidenceItem {
   date: string;
 }
 
+const DEMO_DRAFTS: DraftItem[] = [
+  { id: 'd-1', entry_date: 'Today', content: 'Shipped multi-tenant authentication backend and database migration ahead of quarterly sprint schedule.' },
+  { id: 'd-2', entry_date: 'Yesterday', content: 'Completed unit test coverage for PostgreSQL Row-Level Security policy enforcement.' },
+];
+
+const DEMO_FEEDBACK: FeedbackItem[] = [
+  { id: 'f-1', source_type: 'self', content: 'Demonstrated strong ownership over authentication module refactor.', created_at: '2 days ago' },
+  { id: 'f-2', source_type: 'peer', content: 'Dev provided clear API documentation and helped unblock frontend integration.', created_at: '3 days ago' },
+  { id: 'f-3', source_type: 'manager', content: 'Consistently delivers high-quality backend code ahead of sprint deadlines.', created_at: '1 week ago' },
+];
+
+const DEMO_EVIDENCE: EvidenceItem[] = [
+  { id: 'e-1', evidence_type: 'project_outcome', description: 'PR #42 - PostgreSQL Multi-Tenant Auth Migration', link_url: 'https://github.com/acme/verity/pull/42', date: 'Oct 15' },
+  { id: 'e-2', evidence_type: 'metric', description: 'Zero API Key Exposure over 90-day evaluation cycle', date: 'Oct 12' },
+];
+
 export default function EmployeePanelPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const [drafts, setDrafts] = useState<DraftItem[]>([]);
-  const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
-  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [drafts, setDrafts] = useState<DraftItem[]>(DEMO_DRAFTS);
+  const [feedback, setFeedback] = useState<FeedbackItem[]>(DEMO_FEEDBACK);
+  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>(DEMO_EVIDENCE);
+  const [loading, setLoading] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   // Evidence Modal state
@@ -48,15 +64,15 @@ export default function EmployeePanelPage() {
     if (!user) return;
     try {
       const draftRes = await apiFetch<{ drafts: DraftItem[] }>(`/daily-drafts/${user.id}`);
-      setDrafts(draftRes.drafts || []);
+      if (draftRes && draftRes.drafts) setDrafts(draftRes.drafts);
 
       const fbRes = await apiFetch<{ feedback: FeedbackItem[] }>(`/feedback/${user.id}`);
-      setFeedback(fbRes.feedback || []);
+      if (fbRes && fbRes.feedback) setFeedback(fbRes.feedback);
 
       const evRes = await apiFetch<{ evidence: EvidenceItem[] }>(`/evidence/${user.id}`);
-      setEvidenceList(evRes.evidence || []);
+      if (evRes && evRes.evidence) setEvidenceList(evRes.evidence);
     } catch (err) {
-      console.error('Error fetching employee panel:', err);
+      console.warn('Using employee panel fallback demo data');
     } finally {
       setLoading(false);
     }

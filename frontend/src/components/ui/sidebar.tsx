@@ -159,22 +159,19 @@ export const MobileSidebar = ({
 export const SidebarLink = ({
   link,
   className,
+  onClick,
   ...props
 }: {
   link: Links;
   className?: string;
-  props?: React.ComponentProps<typeof Link>;
+  onClick?: () => void;
+  [key: string]: any;
 }) => {
   const { open, animate } = useSidebar();
-  return (
-    <Link
-      to={link.href}
-      className={cn(
-        "flex items-center justify-start gap-3 group/sidebar py-2.5 px-2 rounded-xl transition-all hover:bg-[#282828]",
-        className
-      )}
-      {...props}
-    >
+  const isHash = link.href.startsWith('#');
+
+  const content = (
+    <>
       <div className="flex items-center justify-center shrink-0">
         {link.icon}
       </div>
@@ -188,6 +185,25 @@ export const SidebarLink = ({
       >
         {link.label}
       </motion.span>
+    </>
+  );
+
+  const containerClassName = cn(
+    "flex items-center justify-start gap-3 group/sidebar py-2.5 px-2 rounded-xl transition-all hover:bg-[#282828] cursor-pointer w-full text-left",
+    className
+  );
+
+  if (isHash || onClick) {
+    return (
+      <div className={containerClassName} onClick={onClick} {...props}>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <Link to={link.href} className={containerClassName} {...props}>
+      {content}
     </Link>
   );
 };

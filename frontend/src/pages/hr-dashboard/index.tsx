@@ -20,12 +20,50 @@ interface HROverview {
   employees: EmployeeItem[];
 }
 
+const DEMO_HR_OVERVIEW: HROverview = {
+  org_name: 'Acme Corp',
+  employees: [
+    {
+      id: 'emp-1',
+      name: 'Dev Patel',
+      department: 'Engineering',
+      role: 'Lead Auth Architect',
+      status: 'active',
+      review_status: 'verified',
+    },
+    {
+      id: 'emp-2',
+      name: 'Johanna Williams',
+      department: 'Infrastructure',
+      role: 'Senior Systems Engineer',
+      status: 'active',
+      review_status: 'needs_input',
+    },
+    {
+      id: 'emp-3',
+      name: 'Alex Rivera',
+      department: 'Product',
+      role: 'Staff Product Manager',
+      status: 'active',
+      review_status: 'draft',
+    },
+    {
+      id: 'emp-4',
+      name: 'Sarah Chen',
+      department: 'Engineering',
+      role: 'Senior Frontend Lead',
+      status: 'active',
+      review_status: 'verified',
+    },
+  ],
+};
+
 export default function HRDashboardPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [overview, setOverview] = useState<HROverview | null>(null);
-  const [pendingCount, setPendingCount] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [overview, setOverview] = useState<HROverview | null>(DEMO_HR_OVERVIEW);
+  const [pendingCount, setPendingCount] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(false);
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
@@ -41,12 +79,16 @@ export default function HRDashboardPage() {
   const fetchDashboardData = async () => {
     try {
       const data = await apiFetch<HROverview>('/hr/overview');
-      setOverview(data);
+      if (data && data.employees) {
+        setOverview(data);
+      }
 
       const reqData = await apiFetch<{ requests: any[] }>('/hr/requests');
-      setPendingCount(reqData.requests.length);
+      if (reqData && reqData.requests) {
+        setPendingCount(reqData.requests.length);
+      }
     } catch (err) {
-      console.error('Error fetching HR overview:', err);
+      console.warn('Using HR fallback overview data');
     } finally {
       setLoading(false);
     }
