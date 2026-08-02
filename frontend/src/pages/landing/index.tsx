@@ -26,7 +26,10 @@ import {
   Cpu,
   Globe,
   Cloud,
-  Server
+  Server,
+  Building2,
+  Mail,
+  UserCheck
 } from 'lucide-react';
 import LogoLoop, { LogoItem } from '../../components/ui/LogoLoop';
 import CardSwap, { Card } from '../../components/ui/CardSwap';
@@ -282,13 +285,13 @@ export default function LandingPage() {
               to="/login"
               className="px-4 py-2 bg-white text-[#141414] hover:bg-slate-100 font-extrabold rounded-lg text-xs transition-all shadow-sm"
             >
-              Get Demo
+              Employee Sign In
             </Link>
             <Link
-              to="/login/hr"
+              to="/login"
               className="px-4 py-2 bg-[#d0f347] text-[#141414] hover:bg-[#beeb30] font-extrabold rounded-lg text-xs transition-all shadow-sm flex items-center gap-1"
             >
-              Contact us
+              Employee Login
             </Link>
           </div>
         </div>
@@ -322,16 +325,16 @@ export default function LandingPage() {
 
             <div className="pt-2 flex flex-wrap items-center gap-4">
               <Link
-                to="/onboarding"
+                to="/login"
                 className="px-6 py-3 bg-[#d0f347] hover:bg-[#beeb30] text-[#141414] font-extrabold rounded-lg text-sm transition-all shadow-lg shadow-[#d0f347]/20 inline-flex items-center gap-2"
               >
-                Get Demo <ArrowRight className="w-4 h-4" />
+                Employee Sign In <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="#how-it-works"
+                href="#contact-companies"
                 className="px-6 py-3 bg-transparent text-white border border-[#2e2e2e] hover:bg-[#222222] font-extrabold rounded-lg text-sm transition-all"
               >
-                Inspect Workflow
+                Register Company
               </a>
             </div>
           </div>
@@ -743,6 +746,142 @@ export default function LandingPage() {
           fadeOutColor="#181818"
           ariaLabel="Enterprise ecosystem integrations"
         />
+      </section>
+
+      {/* 8. COMPANY REGISTRATION & CONTACT US SECTION */}
+      <section id="contact-companies" className="py-24 bg-[#141414] border-t border-[#2e2e2e] relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-14 text-center max-w-2xl mx-auto scroll-popup">
+            <span className="qount-eyebrow font-mono text-xs font-extrabold uppercase tracking-widest text-[#d0f347]">
+              Company & HR Onboarding Portal
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+              Register Your Company & Setup HR Details
+            </h2>
+            <p className="text-slate-400 text-xs sm:text-sm mt-3">
+              Are you an HR Lead, Manager, or Executive looking to eliminate evaluation bias? Register your organization with Verity to configure custom 360° review rules and invite your team.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch scroll-popup">
+            {/* Left Card: HR & Manager Direct Registration */}
+            <div className="lg:col-span-6 bg-[#1c1c1c] border border-[#2e2e2e] rounded-2xl p-8 flex flex-col justify-between space-y-6 relative overflow-hidden">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-xl bg-[#d0f347]/10 border border-[#d0f347]/30 flex items-center justify-center text-[#d0f347]">
+                  <Building2 className="w-6 h-6" />
+                </div>
+                <h3 className="text-2xl font-extrabold text-white">HR & Manager Onboarding</h3>
+                <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">
+                  Setup your organization's custom performance workflow in under 2 minutes. Configure tenant isolation, department rosters, and automated bias auditing thresholds.
+                </p>
+
+                <ul className="space-y-2.5 pt-2 text-xs font-mono text-slate-300">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#d0f347] shrink-0" />
+                    <span>PostgreSQL Tenant Isolation (org_id RLS)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#d0f347] shrink-0" />
+                    <span>Custom 360° Review Cycles & Recency Indexing</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#d0f347] shrink-0" />
+                    <span>Issue 7-Day Signed Access Tokens to Employees</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#d0f347] shrink-0" />
+                    <span>Server-Side Deterministic Bias Auditing</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-6 border-t border-[#2e2e2e] flex flex-wrap items-center gap-4">
+                <Link
+                  to="/onboarding"
+                  className="px-6 py-3 bg-[#d0f347] hover:bg-[#beeb30] text-[#141414] font-extrabold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-[#d0f347]/20 flex items-center gap-2"
+                >
+                  <UserCheck className="w-4 h-4" /> Setup Company Details
+                </Link>
+                <Link
+                  to="/login/hr"
+                  className="px-6 py-3 bg-[#242424] border border-[#333333] hover:bg-[#2c2c2c] text-white font-extrabold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-2"
+                >
+                  HR Admin Login <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Card: Contact Us / Instant Registration Form */}
+            <div className="lg:col-span-6 bg-[#1c1c1c] border border-[#2e2e2e] rounded-2xl p-8 space-y-6">
+              <div>
+                <span className="font-mono text-xs font-bold text-[#d0f347] uppercase tracking-wider">Contact & Registration</span>
+                <h3 className="text-xl font-extrabold text-white mt-1">Get Started / Inquiry</h3>
+                <p className="text-slate-400 text-xs mt-1">Enter your organization details below to initialize your company setup.</p>
+              </div>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  window.location.href = '/onboarding';
+                }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1.5">
+                    Company Name
+                  </label>
+                  <div className="relative">
+                    <Building2 className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                    <input
+                      type="text"
+                      placeholder="Acme Corporation"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#141414] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347] transition-all"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1.5">
+                    HR Admin / Manager Email
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                    <input
+                      type="email"
+                      placeholder="hr.admin@acme.com"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#141414] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347] transition-all"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1.5">
+                    Organization Size
+                  </label>
+                  <select
+                    className="w-full px-3.5 py-2.5 bg-[#141414] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347] transition-all"
+                  >
+                    <option value="1-50">1 - 50 Employees</option>
+                    <option value="51-200">51 - 200 Employees</option>
+                    <option value="201-1000">201 - 1,000 Employees</option>
+                    <option value="1000+">1,000+ Enterprise</option>
+                  </select>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    className="w-full py-3 bg-[#d0f347] hover:bg-[#beeb30] text-[#141414] font-extrabold rounded-xl text-xs uppercase tracking-wider font-mono transition-all shadow-md flex items-center justify-center gap-2"
+                  >
+                    Register & Setup Company Details <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
