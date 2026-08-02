@@ -12,10 +12,10 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
 
   // Form states
-  const [orgName, setOrgName] = useState('Acme Corp');
-  const [hrName, setHrName] = useState('Priya Shah');
-  const [email, setEmail] = useState('priya@acme.com');
-  const [password, setPassword] = useState('password123');
+  const [orgName, setOrgName] = useState('');
+  const [hrName, setHrName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const [industry, setIndustry] = useState('Technology & Software');
   const [companySize, setCompanySize] = useState('50-200 employees');

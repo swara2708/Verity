@@ -8,8 +8,8 @@ import { LogoDark, Button, Card } from '../../components/ui/primitives';
 export default function HRLoginPage() {
   const navigate = useNavigate();
   const { loginHR } = useAuth();
-  const [email, setEmail] = useState('priya@acme.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
