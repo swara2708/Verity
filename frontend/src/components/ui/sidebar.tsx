@@ -181,7 +181,7 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-slate-300 group-hover/sidebar:text-white text-xs font-mono font-bold tracking-wide whitespace-pre inline-block !p-0 !m-0 transition duration-150"
+        className="text-slate-300 group-hover/sidebar:text-white text-xs font-montserrat font-bold tracking-wide whitespace-pre inline-block !p-0 !m-0 transition duration-150"
       >
         {link.label}
       </motion.span>
