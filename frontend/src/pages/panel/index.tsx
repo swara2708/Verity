@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { PlusCircle, Calendar, MessageSquare, LogOut, Award, Send, Link as LinkIcon } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
 import { Logo, Button, Card } from '../../components/ui/primitives';
 import { Sidebar, SidebarBody, SidebarLink } from '../../components/ui/sidebar';
 import { LayoutDashboard, Calendar as CalendarIcon, PlusCircle as PlusIcon, LogOut as LogOutIcon, Hexagon } from 'lucide-react';

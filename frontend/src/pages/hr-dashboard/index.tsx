@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus, Users, Clock, AlertTriangle, FileText, ExternalLink, LogOut, Copy, Check, Filter } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
 import { Logo, Button, Card, StatusBadge } from '../../components/ui/primitives';
 import { Sidebar, SidebarBody, SidebarLink } from '../../components/ui/sidebar';
 import { LayoutDashboard, Clock as ClockIcon, UserPlus as UserPlusIcon, LogOut as LogOutIcon, Hexagon } from 'lucide-react';
