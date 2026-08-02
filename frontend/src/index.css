@@ -1,93 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body, input, textarea, select {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-    background-color: #C1E8FF;
-    color: #021024;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Sora', 'Inter', system-ui, sans-serif !important;
-    color: #021024;
+  body, h1, h2, h3, h4, h5, h6, input, button, textarea, select {
+    font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif !important;
+    font-optical-sizing: auto;
+    background-color: #161616;
+    color: #ffffff;
   }
 }
 
-.font-sora {
-  font-family: 'Sora', sans-serif !important;
+.font-montserrat {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
 
-.font-mono-code {
-  font-family: 'IBM Plex Mono', monospace !important;
-}
-
-/* Verity Core Buttons & Utility Classes */
-.verity-btn-primary {
-  background-color: #052659;
-  color: #C1E8FF;
-  font-family: 'Sora', sans-serif;
-  font-weight: 700;
+/* Qount Theme Utility Classes */
+.qount-btn-lime {
+  background-color: #d0f347;
+  color: #141414;
+  font-weight: 800;
   transition: all 175ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.verity-btn-primary:hover {
-  background-color: #021024;
+.qount-btn-lime:hover {
+  background-color: #beeb30;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px -4px rgba(5, 38, 89, 0.3);
+  box-shadow: 0 8px 20px -4px rgba(208, 243, 71, 0.4);
 }
 
-.verity-btn-outline {
-  background-color: transparent;
-  border: 1px solid #7DA0CA;
-  color: #052659;
-  font-family: 'Sora', sans-serif;
-  font-weight: 700;
+.qount-btn-white {
+  background-color: #ffffff;
+  color: #141414;
+  font-weight: 800;
   transition: all 175ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.verity-btn-outline:hover {
-  background-color: #EAF3FB;
-  border-color: #052659;
+.qount-btn-white:hover {
+  background-color: #f3f4f6;
   transform: translateY(-2px);
 }
 
-/* VERIFIED vs UNSUPPORTED CLAIM STYLING (Solid vs Dashed) */
+.qount-card-dark {
+  background-color: #222222;
+  border: 1px solid #2e2e2e;
+  border-radius: 1rem;
+}
+
+.qount-eyebrow {
+  color: #d0f347;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 .evidence-claim-verified {
-  border-bottom: 2px solid #052659;
-  color: #021024;
+  text-decoration: none;
   font-weight: 700;
+  color: #ffffff;
 }
 
 .evidence-claim-flagged {
-  border-bottom: 2px dashed #5483B3;
-  color: #021024;
-  font-weight: 600;
-}
-
-/* DIAGONAL STRIPE FILL PATTERN FOR BIAS GAUGE OVER THRESHOLD */
-.bias-gauge-striped {
-  background-image: repeating-linear-gradient(
-    45deg,
-    #052659,
-    #052659 6px,
-    #5483B3 6px,
-    #5483B3 12px
-  );
-}
-
-.verity-card-white {
-  background-color: #FFFFFF;
-  border: 1px solid #7DA0CA;
-  border-radius: 1rem;
-}
-
-.verity-card-dark {
-  background-color: #021024;
-  color: #C1E8FF;
-  border: 1px solid #052659;
-  border-radius: 1rem;
+  text-decoration: none;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .card-hover-lift {
@@ -96,6 +77,88 @@
 
 .card-hover-lift:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 28px -6px rgba(5, 38, 89, 0.15);
-  border-color: #052659;
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.5);
+  border-color: rgba(208, 243, 71, 0.3);
+}
+
+.button-hover-lift {
+  transition: transform 150ms cubic-bezier(0.2, 0.7, 0.2, 1), background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.button-hover-lift:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+/* Glowing Lime Pulse Keyframe */
+@keyframes glowPulseLime {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(208, 243, 71, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 12px 3px rgba(208, 243, 71, 0.6);
+  }
+}
+
+.glow-pulse-lime {
+  animation: glowPulseLime 2.5s infinite ease-in-out;
+}
+
+/* Evidence Pill Scale-In Animation */
+@keyframes pillScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-pill-entrance {
+  animation: pillScaleIn 200ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.status-badge-crossfade {
+  transition: background-color 200ms cubic-bezier(0.2, 0.7, 0.2, 1), color 200ms cubic-bezier(0.2, 0.7, 0.2, 1), border-color 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Modal & Popover Entrance */
+@keyframes backdropFadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes modalCardRise {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-backdrop-enter {
+  animation: backdropFadeIn 200ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.animate-modal-card-enter {
+  animation: modalCardRise 250ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+/* Prefers Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .card-hover-lift:hover,
+  .button-hover-lift:hover {
+    transform: none !important;
+  }
 }

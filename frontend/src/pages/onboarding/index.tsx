@@ -59,64 +59,50 @@ export default function OnboardingPage() {
         }),
       });
 
-      try {
-        await apiFetch('/organizations/setup', {
-          method: 'POST',
-          body: JSON.stringify({
-            industry,
-            company_size: companySize,
-            departments: departments.split(',').map((d) => d.trim()).filter(Boolean),
-            review_cycle_frequency: cycleFrequency,
-            max_recency_pct: parseInt(maxRecencyPct, 10) || 70,
-            min_feedback_sources: parseInt(minSources, 10) || 2,
-          }),
-        });
-      } catch (setupErr) {
-        console.warn('Organization setup endpoint fallback executed');
-      }
+      loginHR(data.token, {
+        id: data.user_id,
+        org_id: data.org_id,
+        role: 'hr_admin',
+        name: hrName,
+        status: 'active',
+      });
 
-      loginHR(data.token, { id: data.user_id, email, name: hrName, role: 'hr_admin' });
       navigate('/hr/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Onboarding failed. Please try again.');
+      setError(err.message || 'Failed to create organization');
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#C1E8FF] text-[#021024] flex flex-col justify-center items-center p-6">
-      <div className="w-full max-w-2xl">
+    <div className="min-h-screen bg-[#161616] text-white flex flex-col justify-center items-center p-6">
+      <div className="w-full max-w-xl">
         <div className="text-center mb-8">
           <Logo className="justify-center mb-3" />
-          <h1 className="text-3xl font-sora font-extrabold text-[#021024]">Setup Your Organization</h1>
-          <p className="text-[#5483B3] text-xs font-mono-code mt-1">Configure multi-tenant isolation, department rosters, and automated bias auditing thresholds.</p>
+          <h1 className="text-3xl font-bold text-white">Organization Setup Wizard</h1>
+          <p className="text-slate-400 text-xs font-mono mt-1">Configure multi-tenant boundary & review policies</p>
         </div>
 
-        {/* Step Indicator */}
-        <div className="grid grid-cols-5 gap-2 mb-6">
-          {steps.map((st) => (
-            <div
-              key={st.id}
-              onClick={() => setStep(st.id)}
-              className={`p-2.5 rounded-xl border text-center font-mono-code text-[10px] font-bold cursor-pointer transition-all ${
-                step === st.id
-                  ? 'bg-[#052659] text-[#C1E8FF] border-[#052659] shadow-md'
-                  : step > st.id
-                  ? 'bg-[#EAF3FB] text-[#052659] border-[#7DA0CA]'
-                  : 'bg-white text-[#5483B3] border-[#7DA0CA]/50'
-              }`}
-            >
-              {st.label}
-            </div>
-          ))}
+        {/* Lime Progress Bar Per Step */}
+        <div className="w-full bg-[#2e2e2e] h-1.5 rounded-full overflow-hidden mb-6">
+          <div
+            className="bg-[#d0f347] h-full transition-all duration-300 ease-verity"
+            style={{ width: `${(step / 5) * 100}%` }}
+          />
         </div>
 
-        <Card className="p-8 shadow-2xl space-y-6 bg-white border-[#7DA0CA]">
+        {/* Step Label in Mono Font */}
+        <div className="flex justify-between items-center font-mono text-xs text-slate-400 mb-6 px-1">
+          <span className="font-bold text-[#d0f347] step-label-crossfade">{steps[step - 1].label}</span>
+          <span className="step-label-crossfade">STEP {step} OF 5</span>
+        </div>
+
+        <Card className="p-8 shadow-2xl">
           {error && (
-            <div className="p-3.5 rounded-xl bg-[#5483B3]/15 border border-[#5483B3]/30 text-[#021024] text-xs flex items-center gap-2 font-mono-code font-bold">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 text-[#052659]" />
-              <span>{error} &bull; unverified</span>
+            <div className="mb-6 p-3.5 rounded-xl bg-[#fb7185]/15 border border-[#fb7185]/30 text-rose-300 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -124,44 +110,48 @@ export default function OnboardingPage() {
             {/* STEP 1 */}
             {step === 1 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-sora font-extrabold text-[#021024] mb-2">Step 1: Organization & Admin Details</h3>
+                <h3 className="text-xl font-bold text-white mb-2">Step 1: Organization & Admin Account</h3>
                 <div>
-                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase tracking-wider mb-1.5">Company Name</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Organization / Company Name</label>
                   <input
                     type="text"
                     value={orgName}
                     onChange={(e) => setOrgName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    placeholder="Acme Corp"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase tracking-wider mb-1.5">HR Lead / Admin Name</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">HR Admin Name</label>
                   <input
                     type="text"
                     value={hrName}
                     onChange={(e) => setHrName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    placeholder="Priya Shah"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase tracking-wider mb-1.5">HR Work Email</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Work Email</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    placeholder="priya@acme.com"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase tracking-wider mb-1.5">Admin Password</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Password</label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    placeholder="••••••••"
                     required
                   />
                 </div>
@@ -171,31 +161,31 @@ export default function OnboardingPage() {
             {/* STEP 2 */}
             {step === 2 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-sora font-extrabold text-[#021024] mb-2">Step 2: Industry & Organization Scale</h3>
+                <h3 className="text-xl font-bold text-white mb-2">Step 2: Industry Sector & Scale</h3>
                 <div>
-                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase tracking-wider mb-1.5">Industry Domain</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Industry Sector</label>
                   <select
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
                   >
                     <option value="Technology & Software">Technology & Software</option>
                     <option value="Finance & Banking">Finance & Banking</option>
-                    <option value="Healthcare & Bio">Healthcare & Biotech</option>
-                    <option value="Retail & E-commerce">Retail & E-commerce</option>
+                    <option value="Healthcare & Biotech">Healthcare & Biotech</option>
+                    <option value="Services & Consulting">Services & Consulting</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase tracking-wider mb-1.5">Company Size</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Company Size</label>
                   <select
                     value={companySize}
                     onChange={(e) => setCompanySize(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
                   >
-                    <option value="1-50 employees">1 - 50 employees</option>
-                    <option value="50-200 employees">50 - 200 employees</option>
-                    <option value="200-1000 employees">200 - 1,000 employees</option>
-                    <option value="1000+ employees">1,000+ employees (Enterprise)</option>
+                    <option value="1-50 employees">1-50 employees</option>
+                    <option value="50-200 employees">50-200 employees</option>
+                    <option value="200-500 employees">200-500 employees</option>
+                    <option value="500+ employees">500+ employees</option>
                   </select>
                 </div>
               </div>
@@ -204,16 +194,16 @@ export default function OnboardingPage() {
             {/* STEP 3 */}
             {step === 3 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-sora font-extrabold text-[#021024] mb-2">Step 3: Department Roster Setup</h3>
+                <h3 className="text-xl font-bold text-white mb-2">Step 3: Organizational Departments</h3>
                 <div>
-                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase tracking-wider mb-1.5">Departments (Comma-separated)</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Departments (Comma-separated)</label>
                   <textarea
                     value={departments}
                     onChange={(e) => setDepartments(e.target.value)}
-                    className="w-full p-3.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659] h-28"
+                    className="w-full p-3.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347] h-28"
                     placeholder="Engineering, Product, Design, HR, Sales"
                   />
-                  <p className="text-[11px] font-mono-code text-[#5483B3] mt-1">Used to categorize employee roster & department level review reports.</p>
+                  <p className="text-[11px] font-mono text-slate-500 mt-1">Used to categorize employee roster & department level review reports.</p>
                 </div>
               </div>
             )}
@@ -221,13 +211,13 @@ export default function OnboardingPage() {
             {/* STEP 4 */}
             {step === 4 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-sora font-extrabold text-[#021024] mb-2">Step 4: Review Cycle Cadence</h3>
+                <h3 className="text-xl font-bold text-white mb-2">Step 4: Review Cycle Cadence</h3>
                 <div>
-                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase tracking-wider mb-1.5">Cycle Frequency</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Cycle Frequency</label>
                   <select
                     value={cycleFrequency}
                     onChange={(e) => setCycleFrequency(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
                   >
                     <option value="Quarterly">Quarterly (Recommended)</option>
                     <option value="Semi-Annual">Semi-Annual</option>
@@ -240,31 +230,31 @@ export default function OnboardingPage() {
             {/* STEP 5 */}
             {step === 5 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-sora font-extrabold text-[#021024] mb-2">Step 5: Bias Sensitivity Thresholds</h3>
+                <h3 className="text-xl font-bold text-white mb-2">Step 5: Bias Sensitivity Thresholds</h3>
                 <div>
-                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase tracking-wider mb-1.5">Max Recency Threshold (%)</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Max Recency Threshold (%)</label>
                   <input
                     type="number"
                     value={maxRecencyPct}
                     onChange={(e) => setMaxRecencyPct(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
                   />
-                  <p className="text-[11px] font-mono-code text-[#5483B3] mt-1">Flag reviews if more than this percentage of feedback occurs in the last 2 weeks.</p>
+                  <p className="text-[11px] font-mono text-slate-500 mt-1">Flag reviews if more than this percentage of feedback occurs in the last 2 weeks.</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase tracking-wider mb-1.5">Min Unique Feedback Sources</label>
+                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-1.5">Min Unique Feedback Sources</label>
                   <input
                     type="number"
                     value={minSources}
                     onChange={(e) => setMinSources(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
                   />
                 </div>
               </div>
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex items-center justify-between pt-6 mt-6 border-t border-[#7DA0CA]/50">
+            <div className="flex items-center justify-between pt-6 mt-6 border-t border-[#2e2e2e]">
               {step > 1 ? (
                 <Button
                   type="button"
