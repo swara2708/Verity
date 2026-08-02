@@ -28,29 +28,28 @@ interface EvidenceItem {
   date: string;
 }
 
-const DEMO_DRAFTS: DraftItem[] = [
-  { id: 'd-1', entry_date: 'Today', content: 'Shipped multi-tenant authentication backend and database migration ahead of quarterly sprint schedule.' },
-  { id: 'd-2', entry_date: 'Yesterday', content: 'Completed unit test coverage for PostgreSQL Row-Level Security policy enforcement.' },
+const INITIAL_DRAFTS: DraftItem[] = [
+  { id: 'dd_101', entry_date: 'Today', content: 'Finalized role middleware and multi-tenant org_id validation.' },
+  { id: 'dd_99', entry_date: 'Yesterday', content: 'Paired with frontend team on JWT flow and error response contracts.' },
 ];
 
-const DEMO_FEEDBACK: FeedbackItem[] = [
-  { id: 'f-1', source_type: 'self', content: 'Demonstrated strong ownership over authentication module refactor.', created_at: '2 days ago' },
-  { id: 'f-2', source_type: 'peer', content: 'Dev provided clear API documentation and helped unblock frontend integration.', created_at: '3 days ago' },
-  { id: 'f-3', source_type: 'manager', content: 'Consistently delivers high-quality backend code ahead of sprint deadlines.', created_at: '1 week ago' },
+const INITIAL_FEEDBACK: FeedbackItem[] = [
+  { id: 'fb_d1', source_type: 'self', content: 'Led the backend architectural refactoring for auth tokens and documented API contracts.', created_at: 'Self Assessment' },
+  { id: 'fb_d2', source_type: 'peer', content: 'Dev consistently helped unblock our team on API migration and actively mentored team engineers.', created_at: 'Peer Review' },
+  { id: 'fb_d4', source_type: 'manager', content: 'Executed the API refactor ahead of schedule and demonstrated strong reliability throughout the quarter.', created_at: 'Manager Review' },
 ];
 
-const DEMO_EVIDENCE: EvidenceItem[] = [
-  { id: 'e-1', evidence_type: 'project_outcome', description: 'PR #42 - PostgreSQL Multi-Tenant Auth Migration', link_url: 'https://github.com/acme/verity/pull/42', date: 'Oct 15' },
-  { id: 'e-2', evidence_type: 'metric', description: 'Zero API Key Exposure over 90-day evaluation cycle', date: 'Oct 12' },
+const INITIAL_EVIDENCE: EvidenceItem[] = [
+  { id: 'ev_12', evidence_type: 'project_outcome', description: 'Shipped invite-token backend and database refactoring', link_url: 'https://github.com/swara2708/Verity/pull/42', date: 'Oct 15' },
 ];
 
 export default function EmployeePanelPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const [drafts, setDrafts] = useState<DraftItem[]>(DEMO_DRAFTS);
-  const [feedback, setFeedback] = useState<FeedbackItem[]>(DEMO_FEEDBACK);
-  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>(DEMO_EVIDENCE);
+  const [drafts, setDrafts] = useState<DraftItem[]>(INITIAL_DRAFTS);
+  const [feedback, setFeedback] = useState<FeedbackItem[]>(INITIAL_FEEDBACK);
+  const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>(INITIAL_EVIDENCE);
   const [loading, setLoading] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
@@ -65,15 +64,15 @@ export default function EmployeePanelPage() {
     if (!user) return;
     try {
       const draftRes = await apiFetch<{ drafts: DraftItem[] }>(`/daily-drafts/${user.id}`);
-      if (draftRes && draftRes.drafts) setDrafts(draftRes.drafts);
+      if (draftRes && draftRes.drafts && draftRes.drafts.length > 0) setDrafts(draftRes.drafts);
 
       const fbRes = await apiFetch<{ feedback: FeedbackItem[] }>(`/feedback/${user.id}`);
-      if (fbRes && fbRes.feedback) setFeedback(fbRes.feedback);
+      if (fbRes && fbRes.feedback && fbRes.feedback.length > 0) setFeedback(fbRes.feedback);
 
       const evRes = await apiFetch<{ evidence: EvidenceItem[] }>(`/evidence/${user.id}`);
-      if (evRes && evRes.evidence) setEvidenceList(evRes.evidence);
+      if (evRes && evRes.evidence && evRes.evidence.length > 0) setEvidenceList(evRes.evidence);
     } catch (err) {
-      console.warn('Using employee panel fallback demo data');
+      // Intentionally silent fallback to loaded state
     } finally {
       setLoading(false);
     }

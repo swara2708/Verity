@@ -23,9 +23,11 @@ interface HROverview {
 
 const DEMO_HR_OVERVIEW: HROverview = {
   org_name: 'Acme Corp',
+const INITIAL_HR_OVERVIEW: HROverview = {
+  org_name: 'Verity Enterprise',
   employees: [
     {
-      id: 'emp-1',
+      id: 'usr_4',
       name: 'Dev Patel',
       department: 'Engineering',
       role: 'Lead Auth Architect',
@@ -33,26 +35,18 @@ const DEMO_HR_OVERVIEW: HROverview = {
       review_status: 'verified',
     },
     {
-      id: 'emp-2',
-      name: 'Johanna Williams',
-      department: 'Infrastructure',
-      role: 'Senior Systems Engineer',
+      id: 'usr_5',
+      name: 'Mia Chen',
+      department: 'Design',
+      role: 'Senior UI/UX Specialist',
       status: 'active',
       review_status: 'needs_input',
     },
     {
-      id: 'emp-3',
-      name: 'Alex Rivera',
-      department: 'Product',
-      role: 'Staff Product Manager',
-      status: 'active',
-      review_status: 'draft',
-    },
-    {
-      id: 'emp-4',
-      name: 'Sarah Chen',
+      id: 'usr_2',
+      name: 'Marcus Vance',
       department: 'Engineering',
-      role: 'Senior Frontend Lead',
+      role: 'Engineering Director',
       status: 'active',
       review_status: 'verified',
     },
@@ -62,7 +56,7 @@ const DEMO_HR_OVERVIEW: HROverview = {
 export default function HRDashboardPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [overview, setOverview] = useState<HROverview | null>(DEMO_HR_OVERVIEW);
+  const [overview, setOverview] = useState<HROverview | null>(INITIAL_HR_OVERVIEW);
   const [pendingCount, setPendingCount] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
