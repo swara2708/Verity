@@ -3,7 +3,7 @@ import urllib.parse
 from sqlmodel import SQLModel, create_engine, Session
 from sqlalchemy.engine.url import make_url
 
-DB_FILE = os.environ.get("VERITY_DB_FILE", "verity.db").strip()
+DB_FILE = (os.environ.get("VERITY_DB_FILE") or os.environ.get("DATABASE_URL") or "verity.db").strip()
 
 # Default fallback database
 DATABASE_URL = "sqlite:///verity.db"
