@@ -3,7 +3,7 @@ import google.generativeai as genai
 
 def call_llm(prompt: str) -> str:
     """
-    Sends a prompt to the Google Gemini API using the gemini-2.0-flash model
+    Sends a prompt to the Google Gemini API using supported models (gemini-3.6-flash, etc.)
     and returns the plain text response.
     """
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -11,9 +11,27 @@ def call_llm(prompt: str) -> str:
         raise ValueError("GEMINI_API_KEY environment variable is not set.")
 
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-2.0-flash")
-    response = model.generate_content(prompt)
-    return response.text
+    
+    # List of candidate models in order of priority/availability
+    candidate_models = [
+        "gemini-3.6-flash",
+        "gemini-3.1-flash-lite",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite"
+    ]
+    
+    last_err = None
+    for model_name in candidate_models:
+        try:
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(prompt)
+            if response and response.text:
+                return response.text
+        except Exception as e:
+            last_err = e
+            continue
+
+    raise RuntimeError(f"All Gemini models failed. Last error: {last_err}")
 
 def parse_json_response(response_text: str) -> dict:
     """
