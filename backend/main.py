@@ -26,6 +26,7 @@ from feedback.router import router as feedback_router
 from daily_drafts.router import router as daily_drafts_router
 from evidence.router import router as evidence_router
 from reviews.router import router as reviews_router
+from organizations.router import router as organizations_router
 
 app = FastAPI(
     title="Verity API",
@@ -50,6 +51,7 @@ app.include_router(feedback_router, prefix="/api")
 app.include_router(daily_drafts_router, prefix="/api")
 app.include_router(evidence_router, prefix="/api")
 app.include_router(reviews_router, prefix="/api")
+app.include_router(organizations_router, prefix="/api")
 
 @app.on_event("startup")
 def on_startup():

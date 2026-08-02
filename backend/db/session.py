@@ -30,13 +30,18 @@ if DB_FILE and (DB_FILE.startswith("postgresql://") or DB_FILE.startswith("postg
                 quoted_pwd = urllib.parse.quote(urllib.parse.unquote(raw_pwd), safe="")
                 db_url_str = f"{scheme}{user}:{quoted_pwd}@{host_db_part}"
 
-        # Validate with SQLAlchemy make_url
+        # Validate with SQLAlchemy make_url and check for driver
+        import importlib.util
+        has_psycopg = importlib.util.find_spec("psycopg2") or importlib.util.find_spec("psycopg")
+        if not has_psycopg:
+            raise ImportError("psycopg2 or psycopg driver not installed in Python environment")
+
         make_url(db_url_str)
         DATABASE_URL = db_url_str
         connect_args = {}
         print("[Database] Successfully parsed PostgreSQL database URL.")
     except Exception as err:
-        print(f"[Database Warning] Error parsing PostgreSQL URL ({err}). Falling back to SQLite.")
+        print(f"[Database Warning] Error using PostgreSQL ({err}). Falling back to SQLite.")
         DATABASE_URL = "sqlite:///verity.db"
         connect_args = {"check_same_thread": False}
 elif DB_FILE and DB_FILE != "verity.db":
