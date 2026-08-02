@@ -676,7 +676,7 @@ export default function LandingPage() {
           <div className="mb-14 text-center max-w-2xl mx-auto scroll-popup">
             <span className="qount-eyebrow">Deterministic Bias Auditing Engine</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
-              Pure Mathematical Audit Rules
+              What it catches
             </h2>
             <p className="text-slate-400 text-xs sm:text-sm mt-2">
               Verity computes hard numerical metrics to catch recency bias and feedback concentration before reviews are finalized.
@@ -686,7 +686,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 scroll-popup">
             <div className="bg-[#222222] border border-[#2e2e2e] p-6 rounded-2xl space-y-4">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-slate-400 uppercase">Recency Index</span>
+                <h3 className="font-mono text-xs font-bold text-slate-400 uppercase">Recency Index</h3>
                 <span className="font-mono text-xs font-bold text-[#d0f347]">0.25 (Pass)</span>
               </div>
               <div className="w-full bg-[#181818] h-3 rounded-full overflow-hidden border border-[#2e2e2e]">
@@ -699,7 +699,7 @@ export default function LandingPage() {
 
             <div className="bg-[#222222] border border-[#2e2e2e] p-6 rounded-2xl space-y-4">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-slate-400 uppercase">Source Diversity</span>
+                <h3 className="font-mono text-xs font-bold text-slate-400 uppercase">Source Diversity</h3>
                 <span className="font-mono text-xs font-bold text-[#d0f347]">85% (4 Sources)</span>
               </div>
               <div className="w-full bg-[#181818] h-3 rounded-full overflow-hidden border border-[#2e2e2e]">
@@ -712,7 +712,7 @@ export default function LandingPage() {
 
             <div className="bg-[#222222] border border-[#2e2e2e] p-6 rounded-2xl space-y-4">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-slate-400 uppercase">PostgreSQL RLS</span>
+                <h3 className="font-mono text-xs font-bold text-slate-400 uppercase">PostgreSQL RLS</h3>
                 <span className="font-mono text-xs font-bold text-[#d0f347]">100% Enforced</span>
               </div>
               <div className="w-full bg-[#181818] h-3 rounded-full overflow-hidden border border-[#2e2e2e]">
@@ -746,6 +746,80 @@ export default function LandingPage() {
           fadeOutColor="#181818"
           ariaLabel="Enterprise ecosystem integrations"
         />
+      </section>
+
+      {/* 7.5 WHY EVIDENCE-FIRST REVIEWS MATTER & FAQ SECTION */}
+      <section id="evidence-matters" className="py-24 bg-[#161616] border-t border-[#2e2e2e] relative">
+        <div className="max-w-4xl mx-auto px-6 space-y-16">
+          {/* Main Title & Deep Content Paragraphs */}
+          <div className="space-y-6 scroll-popup">
+            <span className="qount-eyebrow font-mono text-xs font-extrabold uppercase tracking-widest text-[#d0f347]">
+              Core Philosophy & Architecture
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+              Why evidence-first reviews matter
+            </h2>
+
+            <div className="space-y-6 text-slate-300 text-sm sm:text-base leading-relaxed pt-2">
+              <p>
+                In traditional performance management, reviews are written from memory at the end of an evaluation cycle, leading to vagueness, forgotten achievements, and unsubstantiated claims. Verity reverses this paradigm by anchoring every statement in verifiable, continuous evidence collected from GitHub commits, JIRA tickets, Slack updates, and time-distributed peer check-ins. Rather than allowing an AI to invent or extrapolate employee achievements, Verity’s Evidence Retrieval Agent strictly extracts semantic claims and matches them against tangible artifacts, providing a transparent audit trail for every strength and growth area.
+              </p>
+              <p>
+                Large language models are inherently probabilistic and can unintentionally amplify systemic human biases if trusted to perform evaluations directly. To prevent this, Verity intentionally decouples performance summary synthesis from bias scoring. While LLMs organize evidence into clear review drafts, all bias auditing—including Recency Index calculation, Source Diversity scoring, and unverified claim detection—runs through an independent, pure mathematical rule engine. This separation guarantees that audit metrics remain 100% deterministic, reproducible, and immune to model drift.
+              </p>
+            </div>
+          </div>
+
+          {/* 4-Item FAQ Block */}
+          <div className="space-y-8 pt-6 border-t border-[#2e2e2e] scroll-popup">
+            <div className="space-y-1">
+              <span className="font-mono text-xs font-bold text-[#d0f347] uppercase tracking-wider">Frequently Asked Questions</span>
+              <h3 className="text-2xl font-extrabold text-white">Understand How Verity Works</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+              <div className="bg-[#1c1c1c] border border-[#2e2e2e] p-6 rounded-2xl space-y-3">
+                <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#d0f347] shrink-0" />
+                  How is this different from an AI writing my reviews for me?
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Unlike generative tools that invent narrative text from high-level prompts, Verity requires every claim to be grounded in continuous evidence logs and verified artifacts. The system never generates arbitrary performance evaluations; it simply organizes verified work history while flagging any statement that lacks documented backing for manager review.
+                </p>
+              </div>
+
+              <div className="bg-[#1c1c1c] border border-[#2e2e2e] p-6 rounded-2xl space-y-3">
+                <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#d0f347] shrink-0" />
+                  What counts as 'evidence' in a review?
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Evidence includes verifiable workplace artifacts such as merged GitHub pull requests, closed JIRA issues, daily check-in logs, and structured peer feedback submitted throughout the review cycle. Each artifact is tied to a timestamp and user identity within PostgreSQL row-level security boundaries.
+                </p>
+              </div>
+
+              <div className="bg-[#1c1c1c] border border-[#2e2e2e] p-6 rounded-2xl space-y-3">
+                <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#d0f347] shrink-0" />
+                  Can employees see why something was flagged?
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Yes, transparency is built directly into the system interface. When a claim or review metric is flagged for recency bias or lack of backing evidence, both employees and managers can view the exact mathematical score and specific missing evidence source causing the alert.
+                </p>
+              </div>
+
+              <div className="bg-[#1c1c1c] border border-[#2e2e2e] p-6 rounded-2xl space-y-3">
+                <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#d0f347] shrink-0" />
+                  Does Verity work across multiple teams or business units?
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Verity supports multi-tenant enterprise architectures with strict row-level security policy isolation per department and organization. HR administrators can configure custom review cycles, department rosters, and bias auditing thresholds tailored to engineering, product, sales, or operations teams.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* 8. COMPANY REGISTRATION & CONTACT US SECTION */}
