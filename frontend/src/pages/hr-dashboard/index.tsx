@@ -172,7 +172,7 @@ export default function HRDashboardPage() {
               <div className="w-8 h-8 rounded-lg bg-[#d0f347] text-[#141414] flex items-center justify-center font-black">
                 <Hexagon className="w-5 h-5 fill-[#141414]" />
               </div>
-              <span className="font-extrabold text-xl tracking-tight text-white uppercase font-mono">
+              <span className="font-extrabold text-xl tracking-tight text-white uppercase font-montserrat">
                 Verity
               </span>
             </Link>
