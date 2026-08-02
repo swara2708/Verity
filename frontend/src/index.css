@@ -19,48 +19,6 @@
   font-style: normal;
 }
 
-.font-jakarta {
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-}
-
-.font-sora {
-  font-family: 'Sora', 'Plus Jakarta Sans', sans-serif;
-}
-
-.font-mono-code {
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-@keyframes floatSlow {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-8px) rotate(1deg);
-  }
-}
-
-@keyframes floatReverse {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(7px) rotate(-1deg);
-  }
-}
-
-.animate-float-slow {
-  animation: floatSlow 5s ease-in-out infinite;
-}
-
-.animate-float-reverse {
-  animation: floatReverse 6s ease-in-out infinite;
-}
-
-.animate-float-delayed {
-  animation: floatSlow 5.5s ease-in-out 1.5s infinite;
-}
-
 /* Qount Theme Utility Classes */
 .qount-btn-lime {
   background-color: #d0f347;
