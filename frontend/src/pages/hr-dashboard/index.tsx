@@ -21,8 +21,6 @@ interface HROverview {
   employees: EmployeeItem[];
 }
 
-const DEMO_HR_OVERVIEW: HROverview = {
-  org_name: 'Acme Corp',
 const INITIAL_HR_OVERVIEW: HROverview = {
   org_name: 'Verity Enterprise',
   employees: [
