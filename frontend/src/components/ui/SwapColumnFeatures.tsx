@@ -8,7 +8,9 @@ import {
   ExternalLink,
   Sparkles,
   Hexagon,
-  ArrowRight
+  ArrowRight,
+  CheckCircle2,
+  AlertTriangle
 } from 'lucide-react';
 import BorderGlow from './BorderGlow';
 
@@ -37,16 +39,16 @@ export const sourcesData: SourceItem[] = [
     description: 'GitHub · JIRA · Slack · Google Workspace · Okta',
     icon: Wrench,
     statusPill: '85% Source Diversity',
-    statusPillColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+    statusPillColor: 'bg-[#052659]/10 text-[#052659] border-[#052659]/30',
     timestamp: 'Tue, Sep 30 • Cycle v2',
     detailTitle: 'Dev Patel - Lead Auth Architecture Review',
     detailSentence: 'Shipped invite token authentication backend and database migration ahead of quarterly sprint schedule.',
     secondaryStatus: 'Verified Claims',
-    secondaryStatusColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+    secondaryStatusColor: 'bg-[#052659]/10 text-[#052659] border-[#052659]/30',
     stats: [
-      { label: 'Recency Index', val: '0.25 (Pass)', color: 'text-[#d0f347]' },
+      { label: 'Recency Index', val: '0.25 (Pass)', color: 'text-[#C1E8FF]' },
       { label: 'Feedback Sources', val: '4 Unique', color: 'text-white' },
-      { label: 'Audit Warnings', val: '0 Flags', color: 'text-emerald-400' },
+      { label: 'Audit Warnings', val: '0 Flags', color: 'text-[#C1E8FF]' },
     ],
     aiBullets: [
       '100% of strength claims backed by verified GitHub PR #42 & JIRA-104',
@@ -60,17 +62,17 @@ export const sourcesData: SourceItem[] = [
     title: 'Evidence Timeline',
     description: 'Daily Drafts · Project PRs · Metric Outcomes',
     icon: Layers,
-    statusPill: '78% Recency Alert',
-    statusPillColor: 'bg-amber-100 text-amber-800 border-amber-300',
+    statusPill: '78% Recency Alert · unverified',
+    statusPillColor: 'bg-[#5483B3]/15 text-[#052659] border-[#5483B3]/30',
     timestamp: 'Mon, Oct 06 • Cycle v2',
     detailTitle: 'Johanna Williams - Systems API Refactor',
     detailSentence: '85% of feedback weight accumulated in the last 14 days of evaluation cycle.',
-    secondaryStatus: 'Review Needs Input',
-    secondaryStatusColor: 'bg-amber-100 text-amber-800 border-amber-300',
+    secondaryStatus: 'Review Needs Input · unverified',
+    secondaryStatusColor: 'bg-[#5483B3]/15 text-[#052659] border-[#5483B3]/30',
     stats: [
-      { label: 'Recency Index', val: '0.85 (High)', color: 'text-[#fbbf24]' },
-      { label: 'Feedback Sources', val: '1 Source', color: 'text-[#fbbf24]' },
-      { label: 'Audit Warnings', val: '1 Flag', color: 'text-[#fb7185]' },
+      { label: 'Recency Index', val: '0.85 (High)', color: 'text-[#7DA0CA]' },
+      { label: 'Feedback Sources', val: '1 Source', color: 'text-[#7DA0CA]' },
+      { label: 'Audit Warnings', val: '1 Flag', color: 'text-[#7DA0CA]' },
     ],
     aiBullets: [
       'Single-source dependency detected: Manager feedback only',
@@ -80,21 +82,21 @@ export const sourcesData: SourceItem[] = [
   },
   {
     id: 2,
-    category: 'PLATFORM SECURITY',
+    category: 'TENANT SECURITY',
     title: 'PostgreSQL RLS Audit',
-    description: 'org_id Scoped Policies · Row-Level Isolation',
+    description: 'Org Isolation · JWT Claims · Role Policies',
     icon: Database,
-    statusPill: '100% RLS Compliant',
-    statusPillColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-    timestamp: 'Wed, Oct 15 • Active Shield',
+    statusPill: '100% RLS Enforced',
+    statusPillColor: 'bg-[#052659]/10 text-[#052659] border-[#052659]/30',
+    timestamp: 'Wed, Oct 08 • Active Guard',
     detailTitle: 'Acme Corp - Multi-Tenant Isolation Audit',
     detailSentence: 'Database policies enforce strict org_id isolation across all query execution paths.',
     secondaryStatus: 'PostgreSQL Active',
-    secondaryStatusColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+    secondaryStatusColor: 'bg-[#052659]/10 text-[#052659] border-[#052659]/30',
     stats: [
-      { label: 'Tenant Isolation', val: 'Enforced', color: 'text-[#d0f347]' },
+      { label: 'Tenant Isolation', val: 'Enforced', color: 'text-[#C1E8FF]' },
       { label: 'Token Expiry', val: '7 Days', color: 'text-white' },
-      { label: 'API Key Exposure', val: 'Zero (Server)', color: 'text-emerald-400' },
+      { label: 'API Key Exposure', val: 'Zero (Server)', color: 'text-[#C1E8FF]' },
     ],
     aiBullets: [
       'Row-Level Security prevents cross-tenant data leakage',
@@ -124,27 +126,27 @@ export const SwapColumnFeatures: React.FC = () => {
                 onClick={() => setActiveIndex(source.id)}
                 className={`p-5 rounded-2xl border cursor-pointer transition-all duration-250 ${
                   isActive
-                    ? 'bg-[#222222] border-[#d0f347] shadow-lg shadow-[#d0f347]/15 translate-x-1'
-                    : 'bg-[#1c1c1c] border-[#2e2e2e] hover:border-slate-500 opacity-75 hover:opacity-100'
+                    ? 'bg-[#052659] text-white border-[#052659] shadow-xl translate-x-1'
+                    : 'bg-white text-[#021024] border-[#7DA0CA] hover:border-[#052659] hover:bg-[#EAF3FB]'
                 }`}
                 style={{ transitionTimingFunction: 'cubic-bezier(0.2, 0.7, 0.2, 1)' }}
               >
                 <div className="flex items-center gap-3 mb-2">
                   <div
                     className={`p-2.5 rounded-xl transition-all duration-250 ${
-                      isActive ? 'bg-[#d0f347] text-[#141414] glow-pulse-lime' : 'bg-[#282828] text-slate-300'
+                      isActive ? 'bg-[#C1E8FF] text-[#052659]' : 'bg-[#C1E8FF]/60 text-[#052659]'
                     }`}
                   >
                     <IconComp className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-[10px] font-mono font-bold text-[#d0f347] uppercase tracking-wider">
+                    <div className={`text-[10px] font-mono-code font-bold uppercase tracking-wider ${isActive ? 'text-[#C1E8FF]' : 'text-[#5483B3]'}`}>
                       {source.category}
                     </div>
-                    <h4 className="font-extrabold text-base text-white">{source.title}</h4>
+                    <h4 className={`font-sora font-extrabold text-base ${isActive ? 'text-white' : 'text-[#021024]'}`}>{source.title}</h4>
                   </div>
                 </div>
-                <p className="text-xs text-slate-400 font-mono pl-11 leading-relaxed">
+                <p className={`text-xs font-mono-code pl-11 leading-relaxed ${isActive ? 'text-slate-200' : 'text-[#5483B3]'}`}>
                   {source.description}
                 </p>
               </div>
@@ -155,15 +157,13 @@ export const SwapColumnFeatures: React.FC = () => {
         {/* CENTER: Dashed Connector Line with Animated Glowing Node */}
         <div className="hidden lg:flex lg:col-span-2 flex-col items-center justify-center relative h-96">
           <svg className="absolute inset-0 w-full h-full" overflow="visible">
-            {/* Static background dashed connector lines */}
-            <path d="M 0 60 C 60 60, 60 190, 120 190" fill="none" stroke="#2e2e2e" strokeWidth="2" strokeDasharray="4 4" />
-            <path d="M 0 190 L 120 190" fill="none" stroke="#2e2e2e" strokeWidth="2" strokeDasharray="4 4" />
-            <path d="M 0 320 C 60 320, 60 190, 120 190" fill="none" stroke="#2e2e2e" strokeWidth="2" strokeDasharray="4 4" />
+            <path d="M 0 60 C 60 60, 60 190, 120 190" fill="none" stroke="#7DA0CA" strokeWidth="2" strokeDasharray="4 4" />
+            <path d="M 0 190 L 120 190" fill="none" stroke="#7DA0CA" strokeWidth="2" strokeDasharray="4 4" />
+            <path d="M 0 320 C 60 320, 60 190, 120 190" fill="none" stroke="#7DA0CA" strokeWidth="2" strokeDasharray="4 4" />
 
-            {/* Active connecting path smoothly animating over ~250ms */}
             <motion.path
               fill="none"
-              stroke="#d0f347"
+              stroke="#052659"
               strokeWidth="3"
               strokeDasharray="6 6"
               initial={false}
@@ -181,15 +181,15 @@ export const SwapColumnFeatures: React.FC = () => {
 
           {/* Central Glowing Hub */}
           <motion.div
-            className="z-20 w-10 h-10 rounded-xl bg-[#d0f347] text-[#141414] flex items-center justify-center font-black shadow-xl shadow-[#d0f347]/40 glow-pulse-lime"
+            className="z-20 w-10 h-10 rounded-xl bg-[#052659] text-[#C1E8FF] flex items-center justify-center font-black shadow-xl"
             animate={{ scale: [1, 1.08, 1] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           >
-            <Hexagon className="w-6 h-6 fill-[#141414]" />
+            <Hexagon className="w-6 h-6 fill-[#C1E8FF]" />
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN: Single Detail Panel with Staggered Framer Motion Swap Animation */}
+        {/* RIGHT COLUMN: Single Detail Panel */}
         <div className="lg:col-span-6 space-y-4">
           <AnimatePresence mode="popLayout">
             <motion.div
@@ -204,34 +204,31 @@ export const SwapColumnFeatures: React.FC = () => {
               }}
               className="space-y-4"
             >
-              {/* White Detail Card - BUG FIXED: Title sits directly on white canvas in solid dark text (NO dark overlay box!) */}
-              <div className="bg-white rounded-2xl p-6 text-[#141414] shadow-2xl space-y-4 border border-slate-200">
-                {/* Top Row: Status Pill + Timestamp */}
+              {/* White Detail Card */}
+              <div className="bg-white rounded-2xl p-6 text-[#021024] shadow-xl space-y-4 border border-[#7DA0CA]">
                 <div className="flex items-center justify-between">
-                  <span className={`text-xs font-mono font-extrabold px-3 py-1 rounded-full border ${activeSource.statusPillColor}`}>
+                  <span className={`text-xs font-mono-code font-extrabold px-3 py-1 rounded-full border ${activeSource.statusPillColor}`}>
                     {activeSource.statusPill}
                   </span>
-                  <span className="text-[11px] font-mono font-bold text-slate-500">{activeSource.timestamp}</span>
+                  <span className="text-[11px] font-mono-code font-bold text-[#5483B3]">{activeSource.timestamp}</span>
                 </div>
 
-                {/* Main Title sitting CLEANLY on white background */}
                 <div>
-                  <h3 className="font-extrabold text-xl sm:text-2xl text-[#141414] tracking-tight leading-snug">
+                  <h3 className="font-sora font-extrabold text-xl sm:text-2xl text-[#021024] tracking-tight leading-snug">
                     {activeSource.detailTitle}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-1">
+                  <p className="text-xs sm:text-sm text-[#5483B3] font-medium leading-relaxed mt-1">
                     {activeSource.detailSentence}
                   </p>
                 </div>
 
-                {/* Secondary Status Row + Inspect Link */}
-                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                  <span className={`text-xs font-bold font-mono px-3 py-1 rounded-lg ${activeSource.secondaryStatusColor}`}>
+                <div className="flex items-center justify-between pt-3 border-t border-[#7DA0CA]/40">
+                  <span className={`text-xs font-bold font-mono-code px-3 py-1 rounded-lg ${activeSource.secondaryStatusColor}`}>
                     {activeSource.secondaryStatus}
                   </span>
                   <Link
                     to="/hr/dashboard"
-                    className="text-xs font-extrabold text-[#141414] hover:text-[#1F6D4C] transition-colors flex items-center gap-1.5 group"
+                    className="text-xs font-extrabold text-[#052659] hover:text-[#021024] transition-colors flex items-center gap-1.5 group"
                   >
                     Inspect Report{' '}
                     <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
@@ -239,34 +236,34 @@ export const SwapColumnFeatures: React.FC = () => {
                 </div>
               </div>
 
-              {/* 3 Small Stat Cards Below */}
+              {/* 3 Small Stat Cards Below (Dark Navy Contrast Cards) */}
               <div className="grid grid-cols-3 gap-3">
                 {activeSource.stats.map((st, idx) => (
-                  <div key={idx} className="bg-[#222222] border border-[#2e2e2e] p-3.5 rounded-xl space-y-1 card-hover-lift">
-                    <div className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">{st.label}</div>
+                  <div key={idx} className="bg-[#021024] border border-[#052659] p-3.5 rounded-xl space-y-1 card-hover-lift text-white">
+                    <div className="text-[10px] font-mono-code text-[#7DA0CA] font-bold uppercase tracking-wider">{st.label}</div>
                     <div className={`text-sm font-extrabold ${st.color}`}>{st.val}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Highlighted AI Analysis Callout Box with Glowing Accent Border */}
+              {/* Highlighted AI Analysis Callout Box */}
               <BorderGlow
                 animated={true}
-                glowColor="72 85 62"
-                backgroundColor="#222222"
+                glowColor="5 38 89"
+                backgroundColor="#021024"
                 borderRadius={16}
                 glowRadius={28}
                 glowIntensity={1.2}
-                colors={['#d0f347', '#beeb30', '#10b981']}
+                colors={['#052659', '#5483B3', '#7DA0CA']}
               >
-                <div className="p-5 space-y-3">
-                  <div className="flex items-center gap-2 text-[#d0f347] font-extrabold text-xs uppercase tracking-wider">
-                    <Sparkles className="w-4 h-4 text-[#d0f347]" /> VERITY AI ANALYSIS
+                <div className="p-5 space-y-3 text-white">
+                  <div className="flex items-center gap-2 text-[#C1E8FF] font-sora font-extrabold text-xs uppercase tracking-wider">
+                    <Sparkles className="w-4 h-4 text-[#C1E8FF]" /> VERITY AI ANALYSIS
                   </div>
-                  <div className="space-y-2 text-xs text-slate-300 font-medium">
+                  <div className="space-y-2 text-xs text-slate-200 font-medium">
                     {activeSource.aiBullets.map((b, idx) => (
                       <div key={idx} className="flex items-start gap-2.5">
-                        <span className="text-[#d0f347] font-bold text-sm leading-none mt-0.5">◇</span>
+                        <span className="text-[#C1E8FF] font-bold text-sm leading-none mt-0.5">◇</span>
                         <span className="leading-relaxed">{b}</span>
                       </div>
                     ))}

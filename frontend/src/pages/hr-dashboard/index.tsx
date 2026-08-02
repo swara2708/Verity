@@ -48,45 +48,32 @@ const DEMO_HR_OVERVIEW: HROverview = {
       status: 'active',
       review_status: 'draft',
     },
-    {
-      id: 'emp-4',
-      name: 'Sarah Chen',
-      department: 'Engineering',
-      role: 'Senior Frontend Lead',
-      status: 'active',
-      review_status: 'verified',
-    },
   ],
 };
 
-export default function HRDashboardPage() {
-  const navigate = useNavigate();
+export default function HRDashboard() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [overview, setOverview] = useState<HROverview | null>(DEMO_HR_OVERVIEW);
-  const [pendingCount, setPendingCount] = useState<number>(1);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
+  const [departmentFilter, setDepartmentFilter] = useState('all');
 
-  // Invite Modal state
-  const [showInviteModal, setShowInviteModal] = useState<boolean>(false);
-  const [inviteEmail, setInviteEmail] = useState<string>('');
-  const [inviteRole, setInviteRole] = useState<string>('employee');
-  const [inviteDepartment, setInviteDepartment] = useState<string>('Engineering');
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState('employee');
+  const [inviteDepartment, setInviteDepartment] = useState('Engineering');
+  const [inviteLoading, setInviteLoading] = useState(false);
   const [createdInviteUrl, setCreatedInviteUrl] = useState<string | null>(null);
-  const [copied, setCopied] = useState<boolean>(false);
-  const [inviteLoading, setInviteLoading] = useState<boolean>(false);
+  const [copied, setCopied] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const pendingCount = 0;
 
   const fetchDashboardData = async () => {
     try {
-      const data = await apiFetch<HROverview>('/hr/overview');
-      if (data && data.employees) {
-        setOverview(data);
-      }
-
-      const reqData = await apiFetch<{ requests: any[] }>('/hr/requests');
-      if (reqData && reqData.requests) {
-        setPendingCount(reqData.requests.length);
+      const res = await apiFetch<HROverview>('/hr/overview');
+      if (res && res.employees) {
+        setOverview(res);
       }
     } catch (err) {
       console.warn('Using HR fallback overview data');
@@ -130,8 +117,8 @@ export default function HRDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#161616] flex justify-center items-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d0f347]" />
+      <div className="min-h-screen bg-[#C1E8FF] flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#052659]" />
       </div>
     );
   }
@@ -149,30 +136,30 @@ export default function HRDashboardPage() {
     {
       label: "360° Roster",
       href: "/hr/dashboard",
-      icon: <LayoutDashboard className="h-5 w-5 shrink-0 text-[#d0f347]" />,
+      icon: <LayoutDashboard className="h-5 w-5 shrink-0 text-[#C1E8FF]" />,
     },
     {
       label: `Requests ${pendingCount > 0 ? `(${pendingCount})` : ''}`,
       href: "/hr/requests",
-      icon: <ClockIcon className="h-5 w-5 shrink-0 text-amber-400" />,
+      icon: <ClockIcon className="h-5 w-5 shrink-0 text-[#C1E8FF]" />,
     },
     {
       label: "Logout",
       href: "#logout",
-      icon: <LogOutIcon className="h-5 w-5 shrink-0 text-rose-400" />,
+      icon: <LogOutIcon className="h-5 w-5 shrink-0 text-[#7DA0CA]" />,
     },
   ];
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#161616] text-white">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#C1E8FF] text-[#021024]">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
             <Link to="/hr/dashboard" className="flex items-center gap-2.5 px-2 py-1">
-              <div className="w-8 h-8 rounded-lg bg-[#d0f347] text-[#141414] flex items-center justify-center font-black">
-                <Hexagon className="w-5 h-5 fill-[#141414]" />
+              <div className="w-8 h-8 rounded-lg bg-[#052659] text-[#C1E8FF] flex items-center justify-center font-black">
+                <Hexagon className="w-5 h-5 fill-[#C1E8FF]" />
               </div>
-              <span className="font-extrabold text-xl tracking-tight text-white uppercase font-mono">
+              <span className="font-sora font-extrabold text-xl tracking-tight text-white uppercase font-mono-code">
                 Verity
               </span>
             </Link>
@@ -192,7 +179,7 @@ export default function HRDashboardPage() {
                 label: user?.name || "HR Admin",
                 href: "/hr/dashboard",
                 icon: (
-                  <div className="h-7 w-7 shrink-0 rounded-full bg-[#d0f347] text-[#141414] font-bold font-mono flex items-center justify-center text-xs">
+                  <div className="h-7 w-7 shrink-0 rounded-full bg-[#052659] text-[#C1E8FF] font-bold font-mono-code flex items-center justify-center text-xs border border-[#7DA0CA]">
                     {user?.name?.charAt(0) || 'H'}
                   </div>
                 ),
@@ -204,15 +191,14 @@ export default function HRDashboardPage() {
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto pb-16">
-        {/* Main Container */}
         <main className="max-w-7xl mx-auto px-6 pt-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <span className="font-mono text-xs font-bold text-[#d0f347] uppercase tracking-wider">
+            <span className="font-mono-code text-xs font-bold text-[#052659] uppercase tracking-wider bg-white border border-[#7DA0CA] px-3 py-1 rounded-full">
               {overview?.org_name || 'Acme Corp'} &bull; HR Admin Panel
             </span>
-            <h1 className="text-3xl font-extrabold text-white mt-1">360° Performance Roster</h1>
+            <h1 className="text-3xl font-sora font-extrabold text-[#021024] mt-3">360° Performance Roster</h1>
           </div>
 
           <Button
@@ -232,57 +218,57 @@ export default function HRDashboardPage() {
 
         {/* 4-Stat Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <Card hoverLift>
-            <div className="flex items-center justify-between text-slate-400 mb-2 font-mono text-[11px] uppercase font-bold tracking-wider">
+          <Card hoverLift className="bg-white border-[#7DA0CA]">
+            <div className="flex items-center justify-between text-[#5483B3] mb-2 font-mono-code text-[11px] uppercase font-bold tracking-wider">
               <span>Active Employees</span>
-              <Users className="w-4 h-4 text-[#d0f347]" />
+              <Users className="w-4 h-4 text-[#052659]" />
             </div>
-            <div className="text-4xl font-extrabold text-white">{activeCount}</div>
-            <div className="font-mono text-[11px] text-slate-500 mt-1">Scoped to org_1</div>
+            <div className="text-4xl font-sora font-extrabold text-[#021024]">{activeCount}</div>
+            <div className="font-mono-code text-[11px] text-[#5483B3] mt-1">Scoped to org_1</div>
           </Card>
 
-          <Card hoverLift>
-            <div className="flex items-center justify-between text-slate-400 mb-2 font-mono text-[11px] uppercase font-bold tracking-wider">
+          <Card hoverLift className="bg-white border-[#7DA0CA]">
+            <div className="flex items-center justify-between text-[#5483B3] mb-2 font-mono-code text-[11px] uppercase font-bold tracking-wider">
               <span>Reviews in Progress</span>
-              <FileText className="w-4 h-4 text-[#d0f347]" />
+              <FileText className="w-4 h-4 text-[#052659]" />
             </div>
-            <div className="text-4xl font-extrabold text-[#d0f347]">{inProgressCount}</div>
-            <div className="font-mono text-[11px] text-slate-500 mt-1">Accumulating evidence logs</div>
+            <div className="text-4xl font-sora font-extrabold text-[#052659]">{inProgressCount}</div>
+            <div className="font-mono-code text-[11px] text-[#5483B3] mt-1">Accumulating evidence logs</div>
           </Card>
 
-          <Card hoverLift>
-            <div className="flex items-center justify-between text-slate-400 mb-2 font-mono text-[11px] uppercase font-bold tracking-wider">
+          <Card hoverLift className="bg-white border-[#7DA0CA]">
+            <div className="flex items-center justify-between text-[#5483B3] mb-2 font-mono-code text-[11px] uppercase font-bold tracking-wider">
               <span>Pending Approvals</span>
-              <Clock className="w-4 h-4 text-[#fbbf24]" />
+              <Clock className="w-4 h-4 text-[#052659]" />
             </div>
-            <div className="text-4xl font-extrabold text-[#fbbf24]">{pendingCount}</div>
-            <div className="font-mono text-[11px] text-slate-500 mt-1">Registration queue approval</div>
+            <div className="text-4xl font-sora font-extrabold text-[#052659]">{pendingCount}</div>
+            <div className="font-mono-code text-[11px] text-[#5483B3] mt-1">Registration queue approval</div>
           </Card>
 
-          <Card hoverLift>
-            <div className="flex items-center justify-between text-slate-400 mb-2 font-mono text-[11px] uppercase font-bold tracking-wider">
+          <Card hoverLift className="bg-white border-[#7DA0CA]">
+            <div className="flex items-center justify-between text-[#5483B3] mb-2 font-mono-code text-[11px] uppercase font-bold tracking-wider">
               <span>Flagged Reviews</span>
-              <AlertTriangle className="w-4 h-4 text-[#fb7185]" />
+              <AlertTriangle className="w-4 h-4 text-[#5483B3]" />
             </div>
-            <div className="text-4xl font-extrabold text-[#fb7185]">{flaggedCount}</div>
-            <div className="font-mono text-[11px] text-slate-500 mt-1">Bias threshold warning</div>
+            <div className="text-4xl font-sora font-extrabold text-[#021024]">{flaggedCount}</div>
+            <div className="font-mono-code text-[11px] text-[#5483B3] mt-1">Bias threshold warning</div>
           </Card>
         </div>
 
         {/* Roster Table */}
-        <Card className="p-0 overflow-hidden shadow-2xl">
-          <div className="p-6 border-b border-[#2e2e2e] bg-[#181818] flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Users className="w-4 h-4 text-[#d0f347]" />
+        <Card className="p-0 overflow-hidden shadow-xl bg-white border-[#7DA0CA]">
+          <div className="p-6 border-b border-[#7DA0CA] bg-[#EAF3FB] flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h2 className="text-lg font-sora font-bold text-[#021024] flex items-center gap-2">
+              <Users className="w-4 h-4 text-[#052659]" />
               Employee Review Roster
             </h2>
 
             <div className="flex items-center gap-2">
-              <Filter className="w-3.5 h-3.5 text-slate-400" />
+              <Filter className="w-3.5 h-3.5 text-[#5483B3]" />
               <select
                 value={departmentFilter}
                 onChange={(e) => setDepartmentFilter(e.target.value)}
-                className="bg-[#181818] border border-[#2e2e2e] text-white text-xs px-3.5 py-2 rounded-xl focus:outline-none focus:border-[#d0f347]"
+                className="bg-white border border-[#7DA0CA] text-[#021024] text-xs px-3.5 py-2 rounded-xl focus:outline-none focus:border-[#052659]"
               >
                 <option value="all">All Departments</option>
                 <option value="engineering">Engineering</option>
@@ -293,8 +279,8 @@ export default function HRDashboardPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-white">
-              <thead className="bg-[#181818] font-mono text-[11px] uppercase text-slate-400 font-bold tracking-wider border-b border-[#2e2e2e]">
+            <table className="w-full text-left text-xs text-[#021024]">
+              <thead className="bg-[#EAF3FB] font-mono-code text-[11px] uppercase text-[#5483B3] font-bold tracking-wider border-b border-[#7DA0CA]">
                 <tr>
                   <th className="px-6 py-4">Employee</th>
                   <th className="px-6 py-4">Department</th>
@@ -304,28 +290,28 @@ export default function HRDashboardPage() {
                   <th className="px-6 py-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#2e2e2e]">
+              <tbody className="divide-y divide-[#7DA0CA]/40">
                 {filteredEmployees.map((emp) => (
-                  <tr key={emp.id} className="hover:bg-[#181818] transition-colors card-hover-lift cursor-pointer">
-                    <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-[#d0f347]/15 text-[#d0f347] font-mono font-bold flex items-center justify-center text-xs border border-[#d0f347]/30">
+                  <tr key={emp.id} className="hover:bg-[#EAF3FB]/60 transition-colors cursor-pointer">
+                    <td className="px-6 py-4 font-medium text-[#021024] flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-[#052659] text-[#C1E8FF] font-mono-code font-bold flex items-center justify-center text-xs">
                         {emp.name.charAt(0)}
                       </div>
                       <div>
-                        <div className="font-bold text-white text-sm">{emp.name}</div>
-                        <div className="font-mono text-[11px] text-slate-500">{emp.id}</div>
+                        <div className="font-sora font-bold text-[#021024] text-sm">{emp.name}</div>
+                        <div className="font-mono-code text-[11px] text-[#5483B3]">{emp.id}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-slate-300 font-medium">{emp.department}</td>
-                    <td className="px-6 py-4 text-slate-400 capitalize">{emp.role}</td>
+                    <td className="px-6 py-4 text-[#021024] font-medium">{emp.department}</td>
+                    <td className="px-6 py-4 text-[#5483B3] capitalize">{emp.role}</td>
                     <td className="px-6 py-4">
                       <StatusBadge status={emp.review_status} />
                     </td>
-                    <td className="px-6 py-4 font-mono text-[11px] text-slate-400">Today</td>
+                    <td className="px-6 py-4 font-mono-code text-[11px] text-[#5483B3]">Today</td>
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => navigate(`/hr/review/${emp.id}`)}
-                        className="px-3.5 py-2 bg-[#d0f347]/15 hover:bg-[#d0f347] text-[#d0f347] hover:text-[#141414] border border-[#d0f347]/30 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1"
+                        className="px-3.5 py-2 bg-[#052659] hover:bg-[#021024] text-[#C1E8FF] rounded-xl text-xs font-sora font-bold transition-all inline-flex items-center gap-1 shadow-sm"
                       >
                         Inspect Review <ExternalLink className="w-3.5 h-3.5" />
                       </button>
@@ -340,31 +326,31 @@ export default function HRDashboardPage() {
 
       {/* Invite Modal */}
       {showInviteModal && (
-        <div className="fixed inset-0 bg-[#141414]/80 backdrop-blur-md flex justify-center items-center p-4 z-50 animate-backdrop-enter">
-          <Card className="max-w-md w-full p-6 shadow-2xl space-y-4 animate-modal-card-enter">
-            <h3 className="text-xl font-bold text-white">Issue Signed Invite Token</h3>
-            <p className="text-xs text-slate-400">Generates a time-limited 7-day invite link pre-authorized for your organization.</p>
+        <div className="fixed inset-0 bg-[#021024]/70 backdrop-blur-md flex justify-center items-center p-4 z-50">
+          <Card className="max-w-md w-full p-6 shadow-2xl space-y-4 bg-white border-[#7DA0CA]">
+            <h3 className="text-xl font-sora font-bold text-[#021024]">Issue Signed Invite Token</h3>
+            <p className="text-xs text-[#5483B3]">Generates a time-limited 7-day invite link pre-authorized for your organization.</p>
 
             {!createdInviteUrl ? (
               <form onSubmit={handleCreateInvite} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Invitee Email</label>
+                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase mb-1">Invitee Email</label>
                   <input
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="new.employee@acme.com"
-                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Role</label>
+                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase mb-1">Role</label>
                   <select
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
                   >
                     <option value="employee">Employee</option>
                     <option value="manager">Manager</option>
@@ -373,16 +359,16 @@ export default function HRDashboardPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Department</label>
+                  <label className="block text-xs font-mono-code font-bold text-[#021024] uppercase mb-1">Department</label>
                   <input
                     type="text"
                     value={inviteDepartment}
                     onChange={(e) => setInviteDepartment(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
+                    className="w-full px-3.5 py-2.5 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3 border-t border-[#2e2e2e]">
+                <div className="flex justify-end gap-3 pt-3 border-t border-[#7DA0CA]/50">
                   <Button
                     type="button"
                     onClick={() => setShowInviteModal(false)}
@@ -403,9 +389,9 @@ export default function HRDashboardPage() {
               </form>
             ) : (
               <div className="space-y-4">
-                <div className="p-4 bg-[#181818] rounded-xl border border-[#2e2e2e]">
-                  <label className="block text-xs text-slate-400 font-mono font-semibold mb-1">Signed Invite Link (7-day Expiry):</label>
-                  <div className="text-xs text-[#d0f347] font-mono break-all bg-[#141414] p-3 rounded-lg border border-[#2e2e2e] mb-3">
+                <div className="p-4 bg-[#EAF3FB] rounded-xl border border-[#7DA0CA]">
+                  <label className="block text-xs text-[#5483B3] font-mono-code font-semibold mb-1">Signed Invite Link (7-day Expiry):</label>
+                  <div className="text-xs text-[#052659] font-mono-code break-all bg-white p-3 rounded-lg border border-[#7DA0CA] mb-3 font-bold">
                     {createdInviteUrl}
                   </div>
                   <Button

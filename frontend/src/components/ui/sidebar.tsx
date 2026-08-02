@@ -90,7 +90,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "px-4 py-4 hidden md:flex md:flex-col bg-[#1c1c1c] border-r border-[#2e2e2e] w-[300px] flex-shrink-0 z-30 min-h-screen",
+        "px-4 py-4 hidden md:flex md:flex-col bg-[#021024] border-r border-[#052659] w-[300px] flex-shrink-0 z-30 min-h-screen text-[#C1E8FF]",
         className
       )}
       animate={{
@@ -114,7 +114,7 @@ export const MobileSidebar = ({
   return (
     <div
       className={cn(
-        "h-14 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-[#1c1c1c] border-b border-[#2e2e2e] w-full",
+        "h-14 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-[#021024] border-b border-[#052659] w-full text-[#C1E8FF]",
         className
       )}
       {...props}
@@ -122,7 +122,7 @@ export const MobileSidebar = ({
       <div className="flex justify-end z-20 w-full">
         <button
           onClick={() => setOpen(!open)}
-          className="text-slate-200 hover:text-white p-1 rounded-lg bg-[#282828]"
+          className="text-[#C1E8FF] hover:text-white p-1 rounded-lg bg-[#052659]"
         >
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
@@ -138,12 +138,12 @@ export const MobileSidebar = ({
               ease: "easeInOut",
             }}
             className={cn(
-              "fixed h-full w-full inset-0 bg-[#1c1c1c] p-8 z-[100] flex flex-col justify-between border-r border-[#2e2e2e]",
+              "fixed h-full w-full inset-0 bg-[#021024] p-8 z-[100] flex flex-col justify-between border-r border-[#052659]",
               className
             )}
           >
             <div
-              className="absolute right-6 top-6 z-50 text-slate-200 hover:text-white cursor-pointer p-1 rounded-lg bg-[#282828]"
+              className="absolute right-6 top-6 z-50 text-[#C1E8FF] hover:text-white cursor-pointer p-1 rounded-lg bg-[#052659]"
               onClick={() => setOpen(false)}
             >
               <X className="w-5 h-5" />
@@ -181,7 +181,7 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-slate-300 group-hover/sidebar:text-white text-xs font-mono font-bold tracking-wide whitespace-pre inline-block !p-0 !m-0 transition duration-150"
+        className="text-[#C1E8FF] group-hover/sidebar:text-white text-xs font-mono-code font-bold tracking-wide whitespace-pre inline-block !p-0 !m-0 transition duration-150"
       >
         {link.label}
       </motion.span>
@@ -189,7 +189,7 @@ export const SidebarLink = ({
   );
 
   const containerClassName = cn(
-    "flex items-center justify-start gap-3 group/sidebar py-2.5 px-2 rounded-xl transition-all hover:bg-[#282828] cursor-pointer w-full text-left",
+    "flex items-center justify-start gap-3 group/sidebar py-2.5 px-2 rounded-xl transition-all hover:bg-[#052659] cursor-pointer w-full text-left",
     className
   );
 

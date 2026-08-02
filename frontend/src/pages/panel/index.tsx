@@ -51,71 +51,77 @@ export default function EmployeePanelPage() {
   const [drafts, setDrafts] = useState<DraftItem[]>(DEMO_DRAFTS);
   const [feedback, setFeedback] = useState<FeedbackItem[]>(DEMO_FEEDBACK);
   const [evidenceList, setEvidenceList] = useState<EvidenceItem[]>(DEMO_EVIDENCE);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
-  // Evidence Modal state
-  const [showEvidenceModal, setShowEvidenceModal] = useState<boolean>(false);
-  const [evidenceDescription, setEvidenceDescription] = useState<string>('');
-  const [evidenceLinkUrl, setEvidenceLinkUrl] = useState<string>('');
-  const [evidenceType, setEvidenceType] = useState<string>('project_outcome');
-  const [submittingEvidence, setSubmittingEvidence] = useState<boolean>(false);
+  const [newDraft, setNewDraft] = useState('');
+
+  const [evType, setEvType] = useState('project_outcome');
+  const [evDesc, setEvDesc] = useState('');
+  const [evLink, setEvLink] = useState('');
+  const [submittingEvidence, setSubmittingEvidence] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const fetchPanelData = async () => {
-    if (!user) return;
     try {
-      const draftRes = await apiFetch<{ drafts: DraftItem[] }>(`/daily-drafts/${user.id}`);
-      if (draftRes && draftRes.drafts) setDrafts(draftRes.drafts);
-
-      const fbRes = await apiFetch<{ feedback: FeedbackItem[] }>(`/feedback/${user.id}`);
-      if (fbRes && fbRes.feedback) setFeedback(fbRes.feedback);
-
-      const evRes = await apiFetch<{ evidence: EvidenceItem[] }>(`/evidence/${user.id}`);
-      if (evRes && evRes.evidence) setEvidenceList(evRes.evidence);
+      const [dRes, fRes, eRes] = await Promise.all([
+        apiFetch<DraftItem[]>('/daily-drafts'),
+        apiFetch<FeedbackItem[]>('/reviews/feedback'),
+        apiFetch<EvidenceItem[]>('/evidence'),
+      ]);
+      if (dRes && Array.isArray(dRes)) setDrafts(dRes);
+      if (fRes && Array.isArray(fRes)) setFeedback(fRes);
+      if (eRes && Array.isArray(eRes)) setEvidenceList(eRes);
     } catch (err) {
-      console.warn('Using employee panel fallback demo data');
-    } finally {
-      setLoading(false);
+      console.warn('Using panel fallback demo data');
     }
   };
 
   useEffect(() => {
     fetchPanelData();
-  }, [user]);
+  }, []);
 
-  const handleSubmitEvidence = async (e: React.FormEvent) => {
+  const handleCreateDraft = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!newDraft.trim()) return;
+    try {
+      const res = await apiFetch<DraftItem>('/daily-drafts', {
+        method: 'POST',
+        body: JSON.stringify({ content: newDraft }),
+      });
+      setDrafts([res, ...drafts]);
+      setNewDraft('');
+    } catch (err) {
+      setDrafts([{ id: `d-${Date.now()}`, entry_date: 'Today', content: newDraft }, ...drafts]);
+      setNewDraft('');
+    }
+  };
+
+  const handleAddEvidence = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!evDesc.trim()) return;
     setSubmittingEvidence(true);
     try {
-      await apiFetch('/evidence', {
+      const res = await apiFetch<EvidenceItem>('/evidence', {
         method: 'POST',
         body: JSON.stringify({
-          description: evidenceDescription,
-          link_url: evidenceLinkUrl || null,
-          evidence_type: evidenceType,
-          employee_id: user.id,
+          evidence_type: evType,
+          description: evDesc,
+          link_url: evLink || null,
         }),
       });
-      setEvidenceDescription('');
-      setEvidenceLinkUrl('');
-      setShowEvidenceModal(false);
-      alert('Formal evidence recorded successfully!');
-      fetchPanelData();
-    } catch (err: any) {
-      alert(err.message || 'Failed to record evidence');
+      setEvidenceList([res, ...evidenceList]);
+      setEvDesc('');
+      setEvLink('');
+    } catch (err) {
+      setEvidenceList([
+        { id: `e-${Date.now()}`, evidence_type: evType, description: evDesc, link_url: evLink || undefined, date: 'Today' },
+        ...evidenceList,
+      ]);
+      setEvDesc('');
+      setEvLink('');
     } finally {
       setSubmittingEvidence(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#161616] flex justify-center items-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d0f347]" />
-      </div>
-    );
-  }
 
   const selfFeedback = feedback.filter((f) => f.source_type === 'self');
   const peerFeedback = feedback.filter((f) => f.source_type === 'peer');
@@ -125,30 +131,30 @@ export default function EmployeePanelPage() {
     {
       label: "Portal Overview",
       href: "/panel",
-      icon: <LayoutDashboard className="h-5 w-5 shrink-0 text-[#d0f347]" />,
+      icon: <LayoutDashboard className="h-5 w-5 shrink-0 text-[#C1E8FF]" />,
     },
     {
       label: "Daily Check-in",
       href: "/panel/daily",
-      icon: <CalendarIcon className="h-5 w-5 shrink-0 text-emerald-400" />,
+      icon: <CalendarIcon className="h-5 w-5 shrink-0 text-[#C1E8FF]" />,
     },
     {
       label: "Logout",
       href: "#logout",
-      icon: <LogOutIcon className="h-5 w-5 shrink-0 text-rose-400" />,
+      icon: <LogOutIcon className="h-5 w-5 shrink-0 text-[#7DA0CA]" />,
     },
   ];
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#161616] text-white">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#C1E8FF] text-[#021024]">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
             <Link to="/panel" className="flex items-center gap-2.5 px-2 py-1">
-              <div className="w-8 h-8 rounded-lg bg-[#d0f347] text-[#141414] flex items-center justify-center font-black">
-                <Hexagon className="w-5 h-5 fill-[#141414]" />
+              <div className="w-8 h-8 rounded-lg bg-[#052659] text-[#C1E8FF] flex items-center justify-center font-black">
+                <Hexagon className="w-5 h-5 fill-[#C1E8FF]" />
               </div>
-              <span className="font-extrabold text-xl tracking-tight text-white uppercase font-mono">
+              <span className="font-sora font-extrabold text-xl tracking-tight text-white uppercase font-mono-code">
                 Verity
               </span>
             </Link>
@@ -168,7 +174,7 @@ export default function EmployeePanelPage() {
                 label: user?.name || "Employee",
                 href: "/panel",
                 icon: (
-                  <div className="h-7 w-7 shrink-0 rounded-full bg-[#d0f347] text-[#141414] font-bold font-mono flex items-center justify-center text-xs">
+                  <div className="h-7 w-7 shrink-0 rounded-full bg-[#052659] text-[#C1E8FF] font-bold font-mono-code flex items-center justify-center text-xs border border-[#7DA0CA]">
                     {user?.name?.charAt(0) || 'E'}
                   </div>
                 ),
@@ -180,35 +186,34 @@ export default function EmployeePanelPage() {
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto pb-16">
-        {/* Main Container */}
         <main className="max-w-6xl mx-auto px-6 pt-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Employee Evidence & Feedback Portal</h1>
-          <p className="text-slate-400 text-xs font-mono mt-1">Accumulate continuous evidence logs to eliminate end-of-cycle memory bias.</p>
+          <h1 className="text-3xl font-sora font-extrabold text-[#021024]">Employee Evidence & Feedback Portal</h1>
+          <p className="text-[#5483B3] text-xs font-mono-code mt-1">Accumulate continuous evidence logs to eliminate end-of-cycle memory bias.</p>
         </div>
 
         {/* Two-Column Grid: Daily Draft Log & 360 Feedback Received */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Daily Draft Log Card */}
-          <Card className="shadow-2xl space-y-4">
-            <div className="font-mono text-xs font-bold text-[#d0f347] uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center justify-between">
+          <Card className="shadow-xl space-y-4 bg-white border-[#7DA0CA]">
+            <div className="font-mono-code text-xs font-bold text-[#052659] uppercase tracking-wider border-b border-[#7DA0CA]/50 pb-3 flex items-center justify-between">
               <span className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-[#d0f347]" />
+                <Calendar className="w-4 h-4 text-[#052659]" />
                 DAILY DRAFT LOG (CHRONOLOGICAL)
               </span>
-              <Link to="/panel/daily" className="text-[11px] text-[#d0f347] hover:underline font-mono">
+              <Link to="/panel/daily" className="text-[11px] text-[#052659] hover:underline font-mono-code font-bold">
                 + New Log
               </Link>
             </div>
 
             {drafts.length === 0 ? (
-              <p className="text-xs text-slate-500 italic py-4 text-center font-mono">No daily draft entries logged yet.</p>
+              <p className="text-xs text-[#5483B3] italic py-4 text-center font-mono-code">No daily draft entries logged yet.</p>
             ) : (
               <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
                 {drafts.map((d) => (
-                  <div key={d.id} className="p-3.5 bg-[#181818] rounded-xl border border-[#2e2e2e] text-xs space-y-1">
-                    <div className="font-mono text-[11px] font-bold text-[#d0f347]">{d.entry_date}</div>
-                    <p className="text-slate-200 leading-relaxed">{d.content}</p>
+                  <div key={d.id} className="p-3.5 bg-[#EAF3FB] rounded-xl border border-[#7DA0CA] text-xs space-y-1">
+                    <div className="font-mono-code text-[11px] font-bold text-[#052659]">{d.entry_date}</div>
+                    <p className="text-[#021024] leading-relaxed">{d.content}</p>
                   </div>
                 ))}
               </div>
@@ -216,26 +221,26 @@ export default function EmployeePanelPage() {
           </Card>
 
           {/* 360 Feedback Received Card */}
-          <Card className="shadow-2xl space-y-4">
-            <div className="font-mono text-xs font-bold text-white uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center gap-2">
-              <MessageSquare className="w-4 h-4 text-[#d0f347]" />
+          <Card className="shadow-xl space-y-4 bg-white border-[#7DA0CA]">
+            <div className="font-mono-code text-xs font-bold text-[#052659] uppercase tracking-wider border-b border-[#7DA0CA]/50 pb-3 flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-[#052659]" />
               360° FEEDBACK RECEIVED (GROUPED BY SOURCE)
             </div>
 
             <div className="space-y-4 max-h-80 overflow-y-auto pr-1">
               {/* Manager */}
               <div>
-                <span className="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 uppercase">
+                <span className="font-mono-code text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#052659]/10 text-[#052659] border border-[#052659]/30 uppercase">
                   Manager Feedback ({managerFeedback.length})
                 </span>
                 {managerFeedback.length === 0 ? (
-                  <p className="text-[11px] text-slate-500 italic mt-1 font-mono">No manager feedback recorded.</p>
+                  <p className="text-[11px] text-[#5483B3] italic mt-1 font-mono-code">No manager feedback recorded.</p>
                 ) : (
                   <div className="space-y-2 mt-2">
                     {managerFeedback.map((f) => (
-                      <div key={f.id} className="p-3 bg-[#181818] rounded-xl border border-[#2e2e2e] text-xs text-slate-200">
+                      <div key={f.id} className="p-3 bg-[#EAF3FB] rounded-xl border border-[#7DA0CA] text-xs text-[#021024]">
                         <p>{f.content}</p>
-                        <span className="font-mono text-[10px] text-slate-500 mt-1 block">{new Date(f.created_at).toLocaleDateString()}</span>
+                        <span className="font-mono-code text-[10px] text-[#5483B3] mt-1 block">{new Date(f.created_at).toLocaleDateString()}</span>
                       </div>
                     ))}
                   </div>
@@ -244,17 +249,17 @@ export default function EmployeePanelPage() {
 
               {/* Peer */}
               <div>
-                <span className="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 uppercase">
+                <span className="font-mono-code text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#052659]/10 text-[#052659] border border-[#052659]/30 uppercase">
                   Peer Feedback ({peerFeedback.length})
                 </span>
                 {peerFeedback.length === 0 ? (
-                  <p className="text-[11px] text-slate-500 italic mt-1 font-mono">No peer feedback recorded.</p>
+                  <p className="text-[11px] text-[#5483B3] italic mt-1 font-mono-code">No peer feedback recorded.</p>
                 ) : (
                   <div className="space-y-2 mt-2">
                     {peerFeedback.map((f) => (
-                      <div key={f.id} className="p-3 bg-[#181818] rounded-xl border border-[#2e2e2e] text-xs text-slate-200">
+                      <div key={f.id} className="p-3 bg-[#EAF3FB] rounded-xl border border-[#7DA0CA] text-xs text-[#021024]">
                         <p>{f.content}</p>
-                        <span className="font-mono text-[10px] text-slate-500 mt-1 block">{new Date(f.created_at).toLocaleDateString()}</span>
+                        <span className="font-mono-code text-[10px] text-[#5483B3] mt-1 block">{new Date(f.created_at).toLocaleDateString()}</span>
                       </div>
                     ))}
                   </div>
@@ -263,17 +268,17 @@ export default function EmployeePanelPage() {
 
               {/* Self */}
               <div>
-                <span className="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 uppercase">
+                <span className="font-mono-code text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#052659]/10 text-[#052659] border border-[#052659]/30 uppercase">
                   Self Assessment ({selfFeedback.length})
                 </span>
                 {selfFeedback.length === 0 ? (
-                  <p className="text-[11px] text-slate-500 italic mt-1 font-mono">No self assessments recorded.</p>
+                  <p className="text-[11px] text-[#5483B3] italic mt-1 font-mono-code">No self assessment recorded.</p>
                 ) : (
                   <div className="space-y-2 mt-2">
                     {selfFeedback.map((f) => (
-                      <div key={f.id} className="p-3 bg-[#181818] rounded-xl border border-[#2e2e2e] text-xs text-slate-200">
+                      <div key={f.id} className="p-3 bg-[#EAF3FB] rounded-xl border border-[#7DA0CA] text-xs text-[#021024]">
                         <p>{f.content}</p>
-                        <span className="font-mono text-[10px] text-slate-500 mt-1 block">{new Date(f.created_at).toLocaleDateString()}</span>
+                        <span className="font-mono-code text-[10px] text-[#5483B3] mt-1 block">{new Date(f.created_at).toLocaleDateString()}</span>
                       </div>
                     ))}
                   </div>
@@ -283,123 +288,89 @@ export default function EmployeePanelPage() {
           </Card>
         </div>
 
-        {/* Full-Width Formal Evidence Card */}
-        <Card className="shadow-2xl space-y-4 mb-8">
-          <div className="font-mono text-xs font-bold text-white uppercase tracking-wider border-b border-[#2e2e2e] pb-3 flex items-center justify-between">
+        {/* Bottom Card: Form to Submit Formal Evidence Item */}
+        <Card className="shadow-xl space-y-4 bg-white border-[#7DA0CA]">
+          <div className="font-mono-code text-xs font-bold text-[#052659] uppercase tracking-wider border-b border-[#7DA0CA]/50 pb-3 flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <Award className="w-4 h-4 text-[#d0f347]" />
-              FORMAL EVIDENCE ARTIFACTS
+              <Award className="w-4 h-4 text-[#052659]" />
+              SUBMIT EVIDENCE ITEM (PROJECT PR, METRIC, RECORD)
             </span>
-            <Button
-              onClick={() => setShowEvidenceModal(true)}
-              variant="primary"
-              size="sm"
-            >
-              + Add Evidence
-            </Button>
           </div>
 
-          {evidenceList.length === 0 ? (
-            <p className="text-xs text-slate-500 font-mono py-6 text-center">
-              No formal evidence items recorded yet. Use the "+ Add Evidence" button above.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {evidenceList.map((e) => (
-                <div key={e.id} className="p-4 bg-[#181818] rounded-xl border border-[#2e2e2e] flex items-start justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2.5 py-0.5 rounded-full font-mono text-[11px] font-bold bg-[#d0f347]/15 text-[#d0f347] border border-[#d0f347]/30 uppercase">
-                        {e.evidence_type.replace('_', ' ')}
-                      </span>
-                      <span className="font-mono text-[11px] text-slate-500">{e.date}</span>
+          <form onSubmit={handleAddEvidence} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <div className="md:col-span-3">
+              <label className="block text-xs font-mono-code text-[#5483B3] font-bold uppercase mb-1">Evidence Type</label>
+              <select
+                value={evType}
+                onChange={(e) => setEvType(e.target.value)}
+                className="w-full px-3 py-2 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+              >
+                <option value="project_outcome">Project Outcome</option>
+                <option value="metric">Metric Improvement</option>
+                <option value="peer_praise">Peer Praise</option>
+                <option value="certification">Certification</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-5">
+              <label className="block text-xs font-mono-code text-[#5483B3] font-bold uppercase mb-1">Description</label>
+              <input
+                type="text"
+                value={evDesc}
+                onChange={(e) => setEvDesc(e.target.value)}
+                placeholder="e.g. PR #42 - PostgreSQL Auth Migration"
+                className="w-full px-3 py-2 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+                required
+              />
+            </div>
+
+            <div className="md:col-span-4">
+              <label className="block text-xs font-mono-code text-[#5483B3] font-bold uppercase mb-1">Link URL (Optional)</label>
+              <input
+                type="url"
+                value={evLink}
+                onChange={(e) => setEvLink(e.target.value)}
+                placeholder="https://github.com/..."
+                className="w-full px-3 py-2 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-[#021024] text-xs focus:outline-none focus:border-[#052659]"
+              />
+            </div>
+
+            <div className="md:col-span-12 flex justify-end">
+              <Button type="submit" disabled={submittingEvidence} variant="primary" size="sm" className="gap-2">
+                <Send className="w-3.5 h-3.5" />
+                {submittingEvidence ? 'Submitting...' : 'Link Evidence Artifact'}
+              </Button>
+            </div>
+          </form>
+
+          {evidenceList.length > 0 && (
+            <div className="pt-4 border-t border-[#7DA0CA]/50 space-y-2">
+              <span className="font-mono-code text-[11px] text-[#5483B3] uppercase font-bold">Attached Evidence Artifacts ({evidenceList.length})</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                {evidenceList.map((item) => (
+                  <div key={item.id} className="p-3 bg-[#EAF3FB] border border-[#7DA0CA] rounded-xl text-xs space-y-1">
+                    <div className="flex items-center justify-between font-mono-code text-[10px] text-[#052659] font-bold">
+                      <span className="uppercase">{item.evidence_type.replace('_', ' ')}</span>
+                      <span>{item.date}</span>
                     </div>
-                    <p className="text-xs text-white font-medium">{e.description}</p>
-                    {e.link_url && (
+                    <p className="text-[#021024] font-medium">{item.description}</p>
+                    {item.link_url && (
                       <a
-                        href={e.link_url}
+                        href={item.link_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 font-mono text-[11px] text-[#d0f347] hover:underline mt-1.5"
+                        className="text-[#052659] font-bold hover:underline inline-flex items-center gap-1 font-mono-code text-[11px]"
                       >
-                        <LinkIcon className="w-3 h-3" /> {e.link_url}
+                        <LinkIcon className="w-3 h-3" /> {item.link_url}
                       </a>
                     )}
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </Card>
       </main>
-
-      {/* Add Evidence Modal */}
-      {showEvidenceModal && (
-        <div className="fixed inset-0 bg-[#141414]/80 backdrop-blur-md flex justify-center items-center p-4 z-50 animate-backdrop-enter">
-          <Card className="max-w-md w-full p-6 shadow-2xl space-y-4 animate-modal-card-enter">
-            <h3 className="text-xl font-bold text-white">Add Formal Evidence Artifact</h3>
-            <p className="text-xs text-slate-400">Attach tangible outcomes, PR links, or metric updates.</p>
-
-            <form onSubmit={handleSubmitEvidence} className="space-y-4">
-              <div>
-                <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Description</label>
-                <textarea
-                  value={evidenceDescription}
-                  onChange={(e) => setEvidenceDescription(e.target.value)}
-                  placeholder="e.g. Delivered invite token auth refactor ahead of schedule..."
-                  className="w-full p-3.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347] h-20"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Evidence Type</label>
-                <select
-                  value={evidenceType}
-                  onChange={(e) => setEvidenceType(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
-                >
-                  <option value="project_outcome">Project Outcome</option>
-                  <option value="metric">Metric Improvement</option>
-                  <option value="link">Pull Request / Link</option>
-                  <option value="goal_progress">Goal Update</option>
-                  <option value="general">General</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono font-bold text-slate-300 uppercase mb-1">Optional Link URL</label>
-                <input
-                  type="url"
-                  value={evidenceLinkUrl}
-                  onChange={(e) => setEvidenceLinkUrl(e.target.value)}
-                  placeholder="https://github.com/org/repo/pull/42"
-                  className="w-full px-3.5 py-2.5 bg-[#181818] border border-[#2e2e2e] rounded-xl text-white text-xs focus:outline-none focus:border-[#d0f347]"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-3 border-t border-[#2e2e2e]">
-                <Button
-                  type="button"
-                  onClick={() => setShowEvidenceModal(false)}
-                  variant="outline"
-                  size="sm"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={submittingEvidence}
-                  variant="primary"
-                  size="sm"
-                >
-                  Save Evidence Item
-                </Button>
-              </div>
-            </form>
-          </Card>
-        </div>
-      )}
       </div>
     </div>
   );
